@@ -1,0 +1,14 @@
+# Name of the workflow
+name: test workflow
+
+# define trigger event(s)
+on: [push]
+
+# jobs run in parallel
+jobs:
+
+  # Job to print something
+  say-hello:
+    runs-on: ubuntu-latest
+    steps: 
+      - run: echo "Hello, GitHub Actions!"
