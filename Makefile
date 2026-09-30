@@ -8,12 +8,11 @@ TEST_DIR = tests
 BUILD_DIR = build
 NAME = handheld.elf
 
-# Search path for header files
-CFLAGS += -I$(SRC_DIR)/average
-
 # List module source files
+MODULE_DIRS = $(wildcard $(SRC_DIR)/*/)
+CFLAGS += $(addprefix -I, $(MODULE_DIRS))
 CSOURCES = $(SRC_DIR)/main.c
-CSOURCES += $(wildcard $(SRC_DIR)/average/*.c)
+CSOURCES += $(foreach DIR, $(MODULE_DIRS), $(wildcard $(DIR)*.c))
 
 # Compiler flags
 CFLAGS += -Wall
