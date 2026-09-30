@@ -1,9 +1,15 @@
-## CppUTest framework
-cpputest/
-
 # C/C++ output
 build/
-.o
-.obj
-.out
-.elf
+*.o
+*.obj
+*.out
+*.elf
+*.d
+*.a
+
+# CppUTest framework
+cpputest/
+tests/*/objs/
+tests/*/lib/
+tests/*/*_tests
+
