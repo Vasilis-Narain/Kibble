@@ -1,2 +1,9 @@
-tools/
+## CppUTest framework
+cpputest/
+
+# C/C++ output
 build/
+.o
+.obj
+.out
+.elf
