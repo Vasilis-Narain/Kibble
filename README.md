@@ -16,21 +16,18 @@ This project takes inspiration from the goals of [Raylib](https://www.raylib.com
 API's should strive for similar usage and simplicity.
 
 ## Roadmap
-- [] hardware selection
-- [] prototype schematic
-- [] local build setup (makefile, vendor tools, etc)
-- [] initial bring up (blinky)
-- [] automatic testing 
-- [] HIL automatic testing (learn how it works and decide if necessary)
-- [] button input driver (GPIO)
-- [] display driver
-- [] audio driver
-- [] sd card integration
-- [] user facing input API
-- [] user facing render API
-- [] user facing audio API
-- [] pcb schematic v1
-- [] iterate on final schematics
-
-
-
+- [ ] hardware selection
+- [ ] prototype schematic
+- [ ] local build setup (makefile, vendor tools, etc)
+- [ ] initial bring up (blinky)
+- [ ] automatic testing 
+- [ ] HIL automatic testing (learn how it works and decide if necessary)
+- [ ] button input driver (GPIO)
+- [ ] display driver
+- [ ] audio driver
+- [ ] sd card integration
+- [ ] user facing input API
+- [ ] user facing render API
+- [ ] user facing audio API
+- [ ] pcb schematic v1
+- [ ] iterate on final schematics
