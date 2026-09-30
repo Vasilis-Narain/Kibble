@@ -1,0 +1,5 @@
+# CppUTest framework
+tests/*/objs/
+tests/*/lib/
+tests/*/*_tests
+build/
