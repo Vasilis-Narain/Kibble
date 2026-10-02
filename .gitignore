@@ -13,3 +13,5 @@ tests/*/objs/
 tests/*/lib/
 tests/*/*_tests
 
+# Other
+datasheets/
