@@ -1,11 +1,10 @@
 ## Hardware requirements
 
 Target: 320x240, 16 bit colour, 60 fps. Mainly 2D games, possibly DOOM style 3D games.
-Games are copied onto an SD card and loaded into PSRAM at runtime.
+Games are copied onto an SD card and loaded into internal SRAM at runtime.
 
 ### Overview
 - MCU: STM32H7A3ZIT6Q (280MHz, 2MB flash, ~1.4MB sram, LQFP144)
-- PSRAM: APS6404L-3SQR-SN or ESP-PSRAM64H (same chip, 8MB, OCTOSPI in quad mode)
 - Display: [NHD-2.8-240320AF-CSXP-F](https://www.digikey.it/en/products/detail/newhaven-display-intl/NHD-2-8-240320AF-CSXP-F/9849907) (2.8" 240x320 IPS, ST7789Vi, 16-bit parallel 8080, TE pin)
 - Audio: MAX98357AETE+T (I2S DAC + class-D amp) + 8 ohm 1W speaker
 - Storage: microSD over SDMMC 4-bit
@@ -14,14 +13,15 @@ Games are copied onto an SD card and loaded into PSRAM at runtime.
 - 1 green power LED
 
 ### MCU
-- STM32H7A3 has OCTOSPI - needed to use PSRAM as normal RAM (STM32H743's QUADSPI can't write memory-mapped)
+- STM32H7A3 has 1MB of contiguous AXI sram - fits both framebuffers and a whole game, no external RAM needed
+  - STM32H743 is faster (480MHz) but its RAM is split (largest block 512KB AXI) and it has no SMPS
 - LQFP144 - exposes FMC pins, hand-solderable
 - Q variant (internal SMPS) - same pinout as the NUCLEO-H7A3ZI-Q
-  - 97 GPIOs in LQFP144 (non-Q: 112) - enough for the ~63 needed
+  - 97 GPIOs in LQFP144 (non-Q: 112) - enough for the ~57 needed
   - SMPS roughly halves MCU current @280MHz (~34mA vs ~70mA with LDO, DS13195 table 37)
   - SMPS is optional - without its inductor + caps the chip runs from the internal LDO
 - Double buffered framebuffer (2x 150KB) in internal AXI sram
-- Game code + assets in PSRAM
+- Game code + assets in the remaining ~700KB of AXI sram
 - 8MHz HSE crystal - accurate clocks for USB and audio
 - Decoupling + VCAP capacitors - follow the datasheet reference design
 
@@ -86,5 +86,4 @@ Games are copied onto an SD card and loaded into PSRAM at runtime.
 | Battery voltage | ADC                  | 1    |
 | USB             | OTG FS               | 2    |
 | Debug           | SWD + UART           | 4    |
-| PSRAM           | OCTOSPI (quad)       | 6    |
-| **Total**       |                      | **63** |
+| **Total**       |                      | **57** |
