@@ -2,7 +2,10 @@
 name: Unit Tests
 
 # define trigger event(s)
-on: [push]
+on:
+  push:
+    branches: [main]
+  pull_request:
 
 # jobs run in parallel
 jobs:
