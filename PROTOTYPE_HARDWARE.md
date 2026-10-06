@@ -21,15 +21,14 @@ Expect lower fps than the final product.
   - Backlight: 5V -> 33 ohm -> LED-A, LED-K1-K4 tied -> PN2222A collector, emitter to GND,
     base via 1k to a timer PWM pin (~60mA, about 40% brightness)
 - SD breakout must expose all SDIO pins - most "Arduino SD modules" are SPI-only and won't work
-- Start display, SD and PSRAM at low clocks and keep wires short
+- Start display and SD at low clocks and keep wires short
 
 ### Bring up order
 - Blinky + logging (UART VCP until the display rework, then SWO)
 - Buttons + joystick
 - Display - fill screen, then framebuffer + DMA
 - Audio - sine wave, then sample playback
-- PSRAM - read/write test, then run code from it
-- SD card - read a file, then load a game into PSRAM
+- SD card - read a file, then load a game into sram and run it
 - Measure fps + current draw
 
 ### Shopping list
@@ -45,8 +44,6 @@ Expect lower fps than the final product.
 | Speaker                 | [Adafruit 3351 (4 ohm 3W)](https://www.digikey.it/en/products/detail/adafruit-industries-llc/3351/6612456?s=N4IgTCBcDaIIIBMCGAzATgVwJYBcAEAzAQKwCMIAugL5A)                     | 1   |
 | microSD breakout        | [Adafruit 4682 (SPI/SDIO, 3V)](https://www.digikey.it/en/products/detail/adafruit-industries-llc/4682/12822319?s=N4IgTCBcDaIIIBMCGAzATgVwJYBcAEALAGwAcEAugL5A)                 | 1   |
 | microSD card            | 4-32GB, FAT32                                | 1   |
-| PSRAM                   | [Adafruit 4677 (ESP-PSRAM64H)](https://www.digikey.it/en/products/detail/adafruit-industries-llc/4677/13148775) | 2   |
-| SOIC-8 to DIP adapter   | [Aries LCQT-SOIC8-8](https://www.digikey.it/en/products/detail/aries-electronics/LCQT-SOIC8-8/4754588) | 2   |
 | Joystick                | [Adafruit 512 (thumb joystick + breakout)](https://www.digikey.it/en/products/detail/512/1528-2124-ND/7056915) | 1   |
 | Tactile buttons         | [Adafruit 1119 (12mm, 10 pack)](https://www.digikey.it/en/products/detail/adafruit-industries-llc/1119/7241449) | 2   |
 | Green LED + 330 ohm     | 5mm                                          | 1   |
