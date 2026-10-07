@@ -9,9 +9,7 @@ Expect lower fps than the final product.
   - "-Q" = SMPS supply - power config in CubeMX must match the board
   - Pins used by the board ([UM2408](https://www.st.com/resource/en/user_manual/um2408-stm32h7-nucleo144-boards-mb1363-stmicroelectronics.pdf)): LEDs PB0/PE1/PB14, button PC13, VCP PD8/PD9, USB PA9-PA12 + PG7,
     SWD PA13/PA14, SWO PB3, HSE PH0 (8MHz MCO from ST-LINK), LSE PC14/PC15 (X3 crystal)
-  - FMC D13/D14 = PD8/PD9 conflict with the VCP - rework before wiring the display:
-    - SB16 + SB17 OFF (disconnect ST-LINK VCP), SB103 + SB104 ON (connect to morpho) - UM2408 table 12
-    - Logging over SWO (PB3) instead of UART
+  - To avoid D13/D14 PD8/PD9 conflict with Nucleo's ST-LINK the Prototype will use 8 bit parallel mode.
 - All signals at 3.3V - power the joystick from 3.3V (ADC max is 3.3V)
   - Only exception: display backlight anode from the Nucleo 5V pin (LEDs need 3.1V + headroom)
 - Display: same panel as the final design, on an NHD-FFC40 (passive 1:1 FFC to 2x20 2.54mm)

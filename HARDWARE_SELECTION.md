@@ -15,7 +15,8 @@ Games are copied onto an SD card and loaded into internal SRAM at runtime.
 ### MCU
 - STM32H7A3 has 1MB of contiguous AXI sram - fits both framebuffers and a whole game, no external RAM needed
   - STM32H743 is faster (480MHz) but its RAM is split (largest block 512KB AXI) and it has no SMPS
-- LQFP144 - exposes FMC pins, hand-solderable
+- LQFP144 - exposes FMC pins, routes on 4 layers (BGA would need finer vias), JLCPCB-assembled
+  - LCSC C730224 - check it's the -Q variant and in stock before ordering
 - Q variant (internal SMPS) - same pinout as the NUCLEO-H7A3ZI-Q
   - 97 GPIOs in LQFP144 (non-Q: 112) - enough for the ~57 needed
   - SMPS roughly halves MCU current @280MHz (~34mA vs ~70mA with LDO, DS13195 table 37)
@@ -28,7 +29,8 @@ Games are copied onto an SD card and loaded into internal SRAM at runtime.
 ### Display
 - [NHD-2.8-240320AF-CSXP-F](https://www.digikey.it/en/products/detail/newhaven-display-intl/NHD-2-8-240320AF-CSXP-F/9849907) ([datasheet](https://newhavendisplay.com/content/specs/NHD-2.8-240320AF-CSXP-F.pdf))
   - Bare panel, ST7789Vi controller built into the glass - no controller on the PCB
-  - 40-pin 0.5mm FFC: Molex 54132-4062 socket on the PCB
+  - 40-pin 0.5mm FFC: Molex 54132-4062 socket on the PCB (LCSC C505102), JLCPCB-assembled
+    - Bottom contact - FFC contacts must face the PCB, check against the panel's cable drawing
   - IM0, IM1, IM2 to GND = 16-bit 8080-II, DB0-DB15
   - VDD + VDDI to 3.3V
   - Panel is natively portrait (240x320) - rotate to landscape with MADCTL
