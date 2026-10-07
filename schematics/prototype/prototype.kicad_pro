@@ -8,7 +8,7 @@
       "internal_id": "",
       "mfg": "",
       "mpn": "",
-      "sch_revision": ""
+      "sch_revision": "v0.0.1"
     },
     "layer_pairs": [],
     "layer_presets": [],
@@ -422,11 +422,22 @@
     "reuse_designators": true,
     "subpart_first_id": 65,
     "subpart_id_separator": 0,
-    "top_level_sheets": [],
-    "used_designators": "",
+    "top_level_sheets": [
+      {
+        "filename": "prototype.kicad_sch",
+        "name": "prototype",
+        "uuid": "9db1e270-ec16-463e-aabc-c612eb5c81db"
+      }
+    ],
+    "used_designators": "U1,#PWR1-6,#FLG1-3",
     "variants": []
   },
-  "sheets": [],
+  "sheets": [
+    [
+      "9db1e270-ec16-463e-aabc-c612eb5c81db",
+      "prototype"
+    ]
+  ],
   "text_variables": {},
   "tuning_profiles": {
     "meta": {
