@@ -66,7 +66,6 @@ static void MX_DMA_Init(void);
 static void MX_FMC_Init(void);
 static void MX_TIM14_Init(void);
 static void MX_SAI1_Init(void);
-static void MX_SDMMC1_SD_Init(void);
 static void MX_ADC1_Init(void);
 /* USER CODE BEGIN PFP */
 
@@ -124,7 +123,6 @@ int main(void)
   MX_FMC_Init();
   MX_TIM14_Init();
   MX_SAI1_Init();
-  MX_SDMMC1_SD_Init();
   MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
 
@@ -340,7 +338,7 @@ static void MX_SAI1_Init(void)
   * @param None
   * @retval None
   */
-static void MX_SDMMC1_SD_Init(void)
+void MX_SDMMC1_SD_Init(void)
 {
 
   /* USER CODE BEGIN SDMMC1_Init 0 */
