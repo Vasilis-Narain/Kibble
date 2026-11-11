@@ -14,7 +14,8 @@ Expect lower fps than the final product.
   - Only exception: display backlight anode from the Nucleo 5V pin (LEDs need 3.1V + headroom)
 - Display: same panel as the final design, on an NHD-FFC40 (passive 1:1 FFC to 2x20 2.54mm)
   - Not the NHD-TFT40 - it's for RGB displays and puts 5V/LED driver on our signal pins
-  - IM0, IM1, IM2 to GND (16-bit), VDD + VDDI to 3.3V
+  - 8-bit 8080-II: IM0 to 3.3V, IM1 + IM2 to GND, VDD + VDDI to 3.3V (16-bit would be all IM to GND)
+  - 8-bit uses the panel's DB8-DB15: FMC D0-D7 -> DB8-DB15, leave DB0-DB7 unconnected
   - 2x20 header doesn't fit a breadboard - wire with female-male jumpers
   - Backlight: 5V -> 33 ohm -> LED-A, LED-K1-K4 tied -> PN2222A collector, emitter to GND,
     base via 1k to a timer PWM pin (~60mA, about 40% brightness)
