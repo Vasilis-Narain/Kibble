@@ -16,12 +16,14 @@ jobs:
       - name: Check out this repo
         uses: actions/checkout@v4
 
+      # --network=host: on the ubuntu-26.04 runner, DNS fails from Docker's
+      # default bridge network (apt and the CppUTest git clone need it)
       - name: Build Docker image
-        run: docker build -t handheld-env -f Dockerfile .
+        run: docker build --network=host -t handheld-env -f Dockerfile .
 
       - name: Unit tests
         run: >
-          docker run --rm -v "$PWD:/project" handheld-env sh -c
+          docker run --rm --network=host -v "$PWD:/project" handheld-env sh -c
           "cmake --preset host-tests && cmake --build --preset host-tests && ctest --preset host-tests"
 
       - name: Firmware build
