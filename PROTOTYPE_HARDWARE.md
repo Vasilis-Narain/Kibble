@@ -9,9 +9,7 @@ Expect lower fps than the final product.
   - "-Q" = SMPS supply - power config in CubeMX must match the board
   - Pins used by the board ([UM2408](https://www.st.com/resource/en/user_manual/um2408-stm32h7-nucleo144-boards-mb1363-stmicroelectronics.pdf)): LEDs PB0/PE1/PB14, button PC13, VCP PD8/PD9, USB PA9-PA12 + PG7,
     SWD PA13/PA14, SWO PB3, HSE PH0 (8MHz MCO from ST-LINK), LSE PC14/PC15 (X3 crystal)
-  - FMC D13/D14 = PD8/PD9 conflict with the VCP - rework before wiring the display:
-    - SB16 + SB17 OFF (disconnect ST-LINK VCP), SB103 + SB104 ON (connect to morpho) - UM2408 table 12
-    - Logging over SWO (PB3) instead of UART
+  - To avoid D13/D14 PD8/PD9 conflict with Nucleo's ST-LINK the Prototype will use 8 bit parallel mode.
 - All signals at 3.3V - power the joystick from 3.3V (ADC max is 3.3V)
   - Only exception: display backlight anode from the Nucleo 5V pin (LEDs need 3.1V + headroom)
 - Display: same panel as the final design, on an NHD-FFC40 (passive 1:1 FFC to 2x20 2.54mm)
@@ -21,15 +19,14 @@ Expect lower fps than the final product.
   - Backlight: 5V -> 33 ohm -> LED-A, LED-K1-K4 tied -> PN2222A collector, emitter to GND,
     base via 1k to a timer PWM pin (~60mA, about 40% brightness)
 - SD breakout must expose all SDIO pins - most "Arduino SD modules" are SPI-only and won't work
-- Start display, SD and PSRAM at low clocks and keep wires short
+- Start display and SD at low clocks and keep wires short
 
 ### Bring up order
 - Blinky + logging (UART VCP until the display rework, then SWO)
 - Buttons + joystick
 - Display - fill screen, then framebuffer + DMA
 - Audio - sine wave, then sample playback
-- PSRAM - read/write test, then run code from it
-- SD card - read a file, then load a game into PSRAM
+- SD card - read a file, then load a game into sram and run it
 - Measure fps + current draw
 
 ### Shopping list
@@ -45,8 +42,6 @@ Expect lower fps than the final product.
 | Speaker                 | [Adafruit 3351 (4 ohm 3W)](https://www.digikey.it/en/products/detail/adafruit-industries-llc/3351/6612456?s=N4IgTCBcDaIIIBMCGAzATgVwJYBcAEAzAQKwCMIAugL5A)                     | 1   |
 | microSD breakout        | [Adafruit 4682 (SPI/SDIO, 3V)](https://www.digikey.it/en/products/detail/adafruit-industries-llc/4682/12822319?s=N4IgTCBcDaIIIBMCGAzATgVwJYBcAEALAGwAcEAugL5A)                 | 1   |
 | microSD card            | 4-32GB, FAT32                                | 1   |
-| PSRAM                   | [Adafruit 4677 (ESP-PSRAM64H)](https://www.digikey.it/en/products/detail/adafruit-industries-llc/4677/13148775) | 2   |
-| SOIC-8 to DIP adapter   | [Aries LCQT-SOIC8-8](https://www.digikey.it/en/products/detail/aries-electronics/LCQT-SOIC8-8/4754588) | 2   |
 | Joystick                | [Adafruit 512 (thumb joystick + breakout)](https://www.digikey.it/en/products/detail/512/1528-2124-ND/7056915) | 1   |
 | Tactile buttons         | [Adafruit 1119 (12mm, 10 pack)](https://www.digikey.it/en/products/detail/adafruit-industries-llc/1119/7241449) | 2   |
 | Green LED + 330 ohm     | 5mm                                          | 1   |
