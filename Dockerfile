@@ -1,26 +1,16 @@
-# Fetch ubuntu image
-FROM ubuntu:22.04
+# Build environment for CI and local use: host compiler for unit tests,
+# arm-none-eabi for the firmware. The repo is mounted at /project at run time.
+FROM ubuntu:24.04
 
-# Install build tools
-RUN apt update && \
-    apt install -y wget build-essential autoconf automake libtool
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        build-essential \
+        cmake \
+        ninja-build \
+        git \
+        ca-certificates \
+        gcc-arm-none-eabi \
+        libnewlib-arm-none-eabi && \
+    rm -rf /var/lib/apt/lists/*
 
-# Copy project into image
-RUN mkdir /project
-COPY src /project/src
-COPY tests /project/tests
-COPY Makefile /project/Makefile
-
-# Download and build CppUTest
-RUN mkdir /project/tools/ && \
-    cd /project/ && \
-    wget https://github.com/cpputest/cpputest/releases/download/v4.0/cpputest-4.0.tar.gz && \
-    tar xf cpputest-4.0.tar.gz && \
-    mv cpputest-4.0/ tools/cpputest/ && \
-    cd tools/cpputest/ && \
-    autoreconf -i && \
-    ./configure && \
-    make
-
-# Execute script
-ENTRYPOINT ["make", "test", "-C", "/project/"]
+WORKDIR /project
