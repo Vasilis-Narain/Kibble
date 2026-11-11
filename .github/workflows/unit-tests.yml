@@ -1,5 +1,5 @@
 # Name of the workflow
-name: Unit Tests
+name: Build and test
 
 # define trigger event(s)
 on:
@@ -7,19 +7,32 @@ on:
     branches: [main]
   pull_request:
 
-# jobs run in parallel
 jobs:
-  docker-unit-tests:
+  build-and-test:
     runs-on: ubuntu-latest
-    name: Build and run unit tests Docker image
+    name: Unit tests and firmware build (Docker)
     steps:
 
       - name: Check out this repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
 
       - name: Build Docker image
-        run: docker build -t unit-tests-image -f Dockerfile .
+        run: docker build -t handheld-env -f Dockerfile .
 
-      - name: Run Image
-        run: docker run --rm unit-tests-image
+      - name: Unit tests
+        run: >
+          docker run --rm -v "$PWD:/project" handheld-env sh -c
+          "cmake --preset host-tests && cmake --build --preset host-tests && ctest --preset host-tests"
 
+      - name: Firmware build
+        run: >
+          docker run --rm -v "$PWD:/project" handheld-env sh -c
+          "cmake --preset Release && cmake --build --preset Release"
+
+      - name: Upload firmware
+        uses: actions/upload-artifact@v7
+        with:
+          name: handheld-firmware
+          path: |
+            build/Release/handheld.elf
+            build/Release/handheld.map
