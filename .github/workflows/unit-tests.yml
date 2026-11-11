@@ -10,26 +10,26 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-    name: Unit tests and firmware build (Docker)
+    name: Unit tests and firmware build
     steps:
 
       - name: Check out this repo
         uses: actions/checkout@v4
 
-      # --network=host: on the ubuntu-26.04 runner, DNS fails from Docker's
-      # default bridge network (apt and the CppUTest git clone need it)
-      - name: Build Docker image
-        run: docker build --network=host -t handheld-env -f Dockerfile .
+      # Same packages as the Dockerfile (used for local runs). Installed on the
+      # runner directly: apt inside docker build kept failing DNS on GitHub.
+      - name: Install toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends ninja-build gcc-arm-none-eabi libnewlib-arm-none-eabi
+          cmake --version | head -1
+          arm-none-eabi-gcc --version | head -1
 
       - name: Unit tests
-        run: >
-          docker run --rm --network=host -v "$PWD:/project" handheld-env sh -c
-          "cmake --preset host-tests && cmake --build --preset host-tests && ctest --preset host-tests"
+        run: cmake --preset host-tests && cmake --build --preset host-tests && ctest --preset host-tests
 
       - name: Firmware build
-        run: >
-          docker run --rm -v "$PWD:/project" handheld-env sh -c
-          "cmake --preset Release && cmake --build --preset Release"
+        run: cmake --preset Release && cmake --build --preset Release
 
       - name: Upload firmware
         uses: actions/upload-artifact@v4
