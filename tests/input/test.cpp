@@ -25,14 +25,14 @@ TEST(inputs_test_group, press_is_pressed_and_down) {
     CHECK_FALSE(input_is_key_up(INPUT_A));
 }
 
-TEST(input_test_group, second_frame_is_held_not_pressed) {
+TEST(inputs_test_group, second_frame_is_held_not_pressed) {
     input_update(BTN_INPUT_MASK(INPUT_A));
     input_update(BTN_INPUT_MASK(INPUT_A));
     CHECK_FALSE(input_is_key_pressed(INPUT_A));
     CHECK_TRUE(input_is_key_held(INPUT_A));
 }
 
-TEST(input_test_group, release_is_released_and_up) {
+TEST(inputs_test_group, release_is_released_and_up) {
     input_update(BTN_INPUT_MASK(INPUT_A));
     input_update(0);
     CHECK_TRUE(input_is_key_released(INPUT_A));
@@ -40,7 +40,7 @@ TEST(input_test_group, release_is_released_and_up) {
     CHECK_FALSE(input_is_key_down(INPUT_A));
 }
 
-TEST(input_test_group, released_only_for_one_frame) {
+TEST(inputs_test_group, released_only_for_one_frame) {
     input_update(BTN_INPUT_MASK(INPUT_A));
     input_update(0);
     input_update(0);
