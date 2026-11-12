@@ -42,7 +42,6 @@ static_assert(INPUT_NUMBER == 14, "InputFlagBit enum must have 14 inputs!");
 // Application api
 // NOTE(vasilis): call once per frame
 void input_poll(void);
-void input_update(uint32_t raw);
 
 // Raylib style userland api
 bool input_is_key_down(BtnInputFlagBit btn);
@@ -50,5 +49,8 @@ bool input_is_key_pressed(BtnInputFlagBit btn);
 bool input_is_key_up(BtnInputFlagBit btn);
 bool input_is_key_released(BtnInputFlagBit btn);
 bool input_is_key_held(BtnInputFlagBit btn);
+
+// Internal use
+void input_update(uint32_t raw);
 
 #endif /* __INPUT_H */
