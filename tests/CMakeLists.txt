@@ -16,6 +16,7 @@ FetchContent_MakeAvailable(cpputest)
 #   runs as:  ctest test named <module>
 function(add_module_test module)
     file(GLOB module_src ${PROJECT_SOURCE_DIR}/src/${module}/*.c)
+    list(FILTER module_src EXCLUDE REGEX "_hw\\.c$")
     file(GLOB test_src ${CMAKE_CURRENT_SOURCE_DIR}/${module}/*.cpp)
 
     add_executable(${module}_tests ${module_src} ${test_src})
@@ -26,3 +27,4 @@ function(add_module_test module)
 endfunction()
 
 add_module_test(average)
+add_module_test(input)
