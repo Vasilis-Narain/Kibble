@@ -5,18 +5,17 @@ extern "C" {
 }
 
 // Create a test group
-
 TEST_GROUP(inputs_test_group){
+    // init before each test
     void setup(){
         input_update(0);
-input_update(0);
-}
+        input_update(0);
+    }
 
-void teardown() {
-    // Deinitialize after each test (like dealloc)
-}
-}
-;
+    // deinit after each test (like dealloc)
+    void teardown() {
+    }
+}; 
 
 TEST(inputs_test_group, press_is_pressed_and_down) {
     input_update(BTN_INPUT_MASK(INPUT_A));
