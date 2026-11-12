@@ -5,7 +5,12 @@
 
 // cubeMX driver includes
 #include "main.h"
-//#include "adc.h"
+#include "adc.h"
+
+#define JOY_DMA_BUF_LEN 2u
+
+static ADC_HandleTypeDef *const joy_adc = &hadc1;
+__attribute__((section(".RAM_NOCACHE"), aligned(32))) static volatile uint16_t joy_dma_buf[JOY_DMA_BUF_LEN];
 
 typedef struct {
     GPIO_TypeDef *port;
@@ -44,7 +49,6 @@ static const BtnPin btn_pins[INPUT_NUMBER] = {
 
 // Takes the LL info scattered across different ports and pins with arbitrary numbers,
 // and outputs it into a single u32. This setup should survive any pin changes in cubeMX
-// TODO(vasilis): test on device still needed
 static uint32_t input_read_raw(void) {
     uint32_t raw = 0;
 
@@ -58,8 +62,22 @@ static uint32_t input_read_raw(void) {
 }
 
 // Application api: call once per frame
-// TODO(vasilis): this will also read the ADC numbers once that's done
 void input_poll(void) {
     uint32_t raw = input_read_raw();
-    input_update(raw);
+    input_update(raw, joy_dma_buf[0], joy_dma_buf[1]);
+}
+
+void input_joystick_init(void) {
+    // NOTE(vasilis): .RAM_NOCACHE is NOLOAD so we need to init
+    // 12 bit adc, max value 0..4095, midpoint is ~2048
+    joy_dma_buf[0] = 2048;
+    joy_dma_buf[1] = 2048;
+
+    if (HAL_ADCEx_Calibration_Start(joy_adc, ADC_CALIB_OFFSET_LINEARITY, ADC_SINGLE_ENDED) != HAL_OK) {
+        Error_Handler();
+    }
+
+    if (HAL_ADC_Start_DMA(joy_adc, (uint32_t *)joy_dma_buf, JOY_DMA_BUF_LEN) != HAL_OK) {
+        Error_Handler();
+    }
 }

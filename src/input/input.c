@@ -3,22 +3,26 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include <assert.h>
 
 // flag holding the status of all button inputs
 // NOTE(vasilis): the plan is to poll once per frame and update this flag
 static InputState input_state;
 
-// doubles as a reset function.
-void input_init(void) {
-    input_state.curr = 0;
-    input_state.last = 0;
-    input_state.adc_x = 0;
-    input_state.adc_y = 0;
+void input_update(uint32_t raw_btns, uint32_t raw_adc_x, uint32_t raw_adc_y) {
+    input_state.last = input_state.curr;
+    input_state.curr = raw_btns;
+    input_state.adc_x_raw = raw_adc_x;
+    input_state.adc_y_raw = raw_adc_y;
 }
 
-void input_update(uint32_t raw) {
-    input_state.last = input_state.curr;
-    input_state.curr = raw;
+// NOTE(vasilis): tmp testing function
+uint16_t input_state_adc_raw(uint32_t axis) {
+    assert(axis < 2);
+    if (axis == 0) {
+        return input_state.adc_x_raw;
+    }
+    return input_state.adc_y_raw;
 }
 
 static bool input_was_key_pressed(BtnInputFlagBit btn) {

@@ -38,8 +38,8 @@ typedef enum {
 typedef struct {
     uint32_t curr;
     uint32_t last;
-    int32_t adc_x;
-    int32_t adc_y;
+    uint16_t adc_x_raw;
+    uint16_t adc_y_raw;
 } InputState;
 
 #define BTN_INPUT_MASK(bit_pos) (1u << (bit_pos))
@@ -47,9 +47,11 @@ typedef struct {
 static_assert(INPUT_NUMBER == 14, "InputFlagBit enum must have 14 inputs!");
 
 // Application api
-// NOTE(vasilis): call once per frame
-void input_init(void);
-void input_poll(void);
+void input_joystick_init(void);
+void input_poll(void); // NOTE(vasilis): to be called once per frame
+
+// tmp function for testing
+uint16_t input_state_adc_raw(uint32_t axis);
 
 // Raylib style userland api
 bool input_is_key_down(BtnInputFlagBit btn);
@@ -59,6 +61,6 @@ bool input_is_key_released(BtnInputFlagBit btn);
 bool input_is_key_held(BtnInputFlagBit btn);
 
 // Internal use
-void input_update(uint32_t raw);
+void input_update(uint32_t raw_btns, uint32_t raw_adc_x, uint32_t raw_adc_y);
 
 #endif /* __INPUT_H */
