@@ -42,6 +42,8 @@ static const BtnPin btn_pins[INPUT_NUMBER] = {
     [INPUT_POWER] = {BTN_POWER_GPIO_Port, BTN_POWER_Pin},
 };
 
+// Takes the LL info scattered across different ports and pins with arbitrary numbers,
+// and outputs it into a single u32. This setup should survive any pin changes in cubeMX
 static uint32_t input_read_raw(void) {
     uint32_t raw = 0;
 
@@ -54,6 +56,8 @@ static uint32_t input_read_raw(void) {
     return raw;
 }
 
+// Application api: call once per frame
+// TODO(vasilis): this will also read the ADC numbers once that's done
 void input_poll(void) {
     uint32_t raw = input_read_raw();
     input_update(raw);
