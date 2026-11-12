@@ -2,6 +2,8 @@
 #define __INPUT_H
 
 #include <stdint.h>
+#include <stdbool.h>
+#include <assert.h>
 
 typedef enum {
     INPUT_A = 0,
@@ -23,15 +25,30 @@ typedef enum {
     INPUT_START,
     INPUT_SELECT,
 
+    // joystick select (joystick press)
+    INPUT_JOY_SEL,
+
+    // power
+    INPUT_POWER,
+
     // number of inputs
     INPUT_NUMBER,
 } BtnInputFlagBit;
 
-#define BTN_INPUT_MASK(bit_pos) (1u << bit_pos)
+#define BTN_INPUT_MASK(bit_pos) (1u << (bit_pos))
 
-_Static_assert(INPUT_NUMBER == 12, "InputFlagBit enum must have 12 inputs!");
+static_assert(INPUT_NUMBER == 14, "InputFlagBit enum must have 14 inputs!");
 
-uint32_t input_pack(uint32_t portb, uint32_t portf, uint32_t portd);
+// Application api
+// NOTE(vasilis): call once per frame
+void input_poll(void);
 void input_update(uint32_t raw);
+
+// Raylib style userland api
+bool input_is_key_down(BtnInputFlagBit btn);
+bool input_is_key_pressed(BtnInputFlagBit btn);
+bool input_is_key_up(BtnInputFlagBit btn);
+bool input_is_key_released(BtnInputFlagBit btn);
+bool input_is_key_held(BtnInputFlagBit btn);
 
 #endif /* __INPUT_H */

@@ -24,6 +24,7 @@ if(CMAKE_CROSSCOMPILING)
         src/app.c
         # more files here
         src/input/input.c
+        src/input/input_hw.c
     )
 
     target_include_directories(handheld PRIVATE

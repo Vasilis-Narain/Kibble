@@ -27,3 +27,4 @@ function(add_module_test module)
 endfunction()
 
 add_module_test(average)
+add_module_test(input)
