@@ -22,7 +22,7 @@ API's should strive for similar usage and simplicity.
 - [x] initial bring up (blinky)
 - [ ] automatic testing 
 - [ ] HIL automatic testing (learn how it works and decide if necessary)
-- [ ] button input driver (GPIO)
+- [x] button input driver (GPIO)
 - [ ] display driver
 - [ ] audio driver
 - [ ] sd card integration
