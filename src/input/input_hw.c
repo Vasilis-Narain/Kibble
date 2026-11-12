@@ -44,6 +44,7 @@ static const BtnPin btn_pins[INPUT_NUMBER] = {
 
 // Takes the LL info scattered across different ports and pins with arbitrary numbers,
 // and outputs it into a single u32. This setup should survive any pin changes in cubeMX
+// TODO(vasilis): test on device still needed
 static uint32_t input_read_raw(void) {
     uint32_t raw = 0;
 
