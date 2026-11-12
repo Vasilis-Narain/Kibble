@@ -7,59 +7,48 @@
 #include "main.h"
 //#include "adc.h"
 
-static uint32_t input_read_raw(void) {
-    uint32_t portB = GPIOB->IDR;
-    uint32_t portF = GPIOF->IDR;
-    uint32_t portD = GPIOD->IDR;
+typedef struct {
+    GPIO_TypeDef *port;
+    uint16_t pin;
+} BtnPin;
 
+// Table to map port/pin to application flags
+// index = BtnInputFlagBit.
+static const BtnPin btn_pins[INPUT_NUMBER] = {
+    //letters
+    [INPUT_A] = {BTN_A_GPIO_Port, BTN_A_Pin},
+    [INPUT_B] = {BTN_B_GPIO_Port, BTN_B_Pin},
+    [INPUT_X] = {BTN_X_GPIO_Port, BTN_X_Pin},
+    [INPUT_Y] = {BTN_Y_GPIO_Port, BTN_Y_Pin},
+
+    //dpad
+    [INPUT_UP] = {BTN_UP_GPIO_Port, BTN_UP_Pin},
+    [INPUT_DOWN] = {BTN_DOWN_GPIO_Port, BTN_DOWN_Pin},
+    [INPUT_LEFT] = {BTN_LEFT_GPIO_Port, BTN_LEFT_Pin},
+    [INPUT_RIGHT] = {BTN_RIGHT_GPIO_Port, BTN_RIGHT_Pin},
+
+    //bumpers
+    [INPUT_LB] = {BTN_L_GPIO_Port, BTN_L_Pin},
+    [INPUT_RB] = {BTN_R_GPIO_Port, BTN_R_Pin},
+
+    //options
+    [INPUT_START] = {BTN_START_GPIO_Port, BTN_START_Pin},
+    [INPUT_SELECT] = {BTN_SELECT_GPIO_Port, BTN_SELECT_Pin},
+
+    //joystick press
+    [INPUT_JOY_SEL] = {JOY_SEL_GPIO_Port, JOY_SEL_Pin},
+
+    //pwr
+    [INPUT_POWER] = {BTN_POWER_GPIO_Port, BTN_POWER_Pin},
+};
+
+static uint32_t input_read_raw(void) {
     uint32_t raw = 0;
 
-    // port b
-    if (!(portB & BTN_UP_Pin)) {
-        raw |= BTN_INPUT_MASK(INPUT_UP);
-    }
-    if (!(portB & BTN_DOWN_Pin)) {
-        raw |= BTN_INPUT_MASK(INPUT_DOWN);
-    }
-    if (!(portB & BTN_LEFT_Pin)) {
-        raw |= BTN_INPUT_MASK(INPUT_LEFT);
-    }
-    if (!(portB & BTN_RIGHT_Pin)) {
-        raw |= BTN_INPUT_MASK(INPUT_RIGHT);
-    }
-    if (!(portB & BTN_A_Pin)) {
-        raw |= BTN_INPUT_MASK(INPUT_A);
-    }
-    if (!(portB & BTN_B_Pin)) {
-        raw |= BTN_INPUT_MASK(INPUT_B);
-    }
-    if (!(portB & BTN_X_Pin)) {
-        raw |= BTN_INPUT_MASK(INPUT_X);
-    }
-
-    // port d
-    if (!(portD & BTN_POWER_Pin)) {
-        raw |= BTN_INPUT_MASK(INPUT_POWER);
-    }
-    if (!(portD & JOY_SEL_Pin)) {
-        raw |= BTN_INPUT_MASK(INPUT_JOY_SEL);
-    }
-
-    // port f
-    if (!(portF & BTN_Y_Pin)) {
-        raw |= BTN_INPUT_MASK(INPUT_Y);
-    }
-    if (!(portF & BTN_L_Pin)) {
-        raw |= BTN_INPUT_MASK(INPUT_LB);
-    }
-    if (!(portF & BTN_R_Pin)) {
-        raw |= BTN_INPUT_MASK(INPUT_RB);
-    }
-    if (!(portF & BTN_START_Pin)) {
-        raw |= BTN_INPUT_MASK(INPUT_START);
-    }
-    if (!(portF & BTN_SELECT_Pin)) {
-        raw |= BTN_INPUT_MASK(INPUT_SELECT);
+    for (uint32_t i = 0; i < INPUT_NUMBER; ++i) {
+        if (!(btn_pins[i].port->IDR & btn_pins[i].pin)) {
+            raw |= BTN_INPUT_MASK(i);
+        }
     }
 
     return raw;
