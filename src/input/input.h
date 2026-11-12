@@ -35,6 +35,13 @@ typedef enum {
     INPUT_NUMBER,
 } BtnInputFlagBit;
 
+typedef struct {
+    uint32_t curr;
+    uint32_t last;
+    int32_t adc_x;
+    int32_t adc_y;
+} InputState;
+
 #define BTN_INPUT_MASK(bit_pos) (1u << (bit_pos))
 
 static_assert(INPUT_NUMBER == 14, "InputFlagBit enum must have 14 inputs!");
