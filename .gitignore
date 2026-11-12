@@ -3,3 +3,10 @@ build/
 
 # Other
 datasheets/
+
+# KiCad
+.history/
+*.lck
+*-backups/
+fp-info-cache
+*.kicad_prl
