@@ -23,10 +23,12 @@ if(CMAKE_CROSSCOMPILING)
     target_sources(handheld PRIVATE
         src/app.c
         # more files here
+        src/input/input.c
     )
 
     target_include_directories(handheld PRIVATE
         src
+        src/input
     )
 
     target_link_libraries(handheld
