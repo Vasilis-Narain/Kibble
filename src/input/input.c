@@ -1,8 +1,8 @@
-/* High-level input logic */
+/* High-level input logic file */
+#include "input.h"
+
 #include <stdint.h>
 #include <stdbool.h>
-
-#include "input.h"
 
 // flag holding the status of all button inputs
 // NOTE(vasilis): the plan is to poll once per frame and update this flag

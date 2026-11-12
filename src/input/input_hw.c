@@ -1,8 +1,11 @@
-/* low_level input logic */
+/* Low_level input logic file */
+#include "input.h"
+
 #include <stdint.h>
 
-#include "input.h"
+// cubeMX driver includes
 #include "main.h"
+//#include "adc.h"
 
 static uint32_t input_read_raw(void) {
     uint32_t portB = GPIOB->IDR;
