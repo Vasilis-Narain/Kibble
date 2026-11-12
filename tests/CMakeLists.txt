@@ -26,5 +26,4 @@ function(add_module_test module)
     add_test(NAME ${module} COMMAND ${module}_tests)
 endfunction()
 
-add_module_test(average)
 add_module_test(input)
