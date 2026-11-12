@@ -16,10 +16,10 @@ This project takes inspiration from the goals of [Raylib](https://www.raylib.com
 API's should strive for similar usage and simplicity.
 
 ## Roadmap
-- [ ] hardware selection
+- [x] hardware selection
 - [ ] prototype schematic
-- [ ] local build setup (makefile, vendor tools, etc)
-- [ ] initial bring up (blinky)
+- [x] local build setup (makefile, vendor tools, etc)
+- [x] initial bring up (blinky)
 - [ ] automatic testing 
 - [ ] HIL automatic testing (learn how it works and decide if necessary)
 - [ ] button input driver (GPIO)
