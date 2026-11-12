@@ -15,5 +15,6 @@ void app_main(void) {
             printf("Input A is down\n");
         }
         while (HAL_GetTick() - tick < 17) {}
+        tick += 17;
     }
 }

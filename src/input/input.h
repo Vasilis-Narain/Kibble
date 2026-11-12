@@ -48,6 +48,7 @@ static_assert(INPUT_NUMBER == 14, "InputFlagBit enum must have 14 inputs!");
 
 // Application api
 // NOTE(vasilis): call once per frame
+void input_init(void);
 void input_poll(void);
 
 // Raylib style userland api
