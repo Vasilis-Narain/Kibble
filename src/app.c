@@ -2,13 +2,23 @@
 
 #include <stdio.h>
 
+#include "FreeRTOS.h" // IWYU pragma: keep
+#include "task.h"
 #include "main.h"
 #include "input.h"
 
-void app_main(void) {
-    input_joystick_init();
+void vApplicationMallocFailedHook(void) {
+    configASSERT(0);
+}
 
-    uint32_t tick = HAL_GetTick();
+void vApplicationStackOverflowHook(TaskHandle_t t, char *n) {
+    (void)t;
+    (void)n;
+    configASSERT(0);
+}
+
+void frame_loop(void *pvParameters) {
+    TickType_t last_wake_time = xTaskGetTickCount();
     static uint32_t frame = 0;
     for (;;) {
         input_poll();
@@ -27,8 +37,17 @@ void app_main(void) {
             printf("%ld %ld\r\n", (long)x, (long)y);
         }
 
-        // NOTE(vasilis): freeRTOS provides a delayUntil() type function which will be used instead of this pattern
-        while (HAL_GetTick() - tick < 17) {}
-        tick += 17;
+        vTaskDelayUntil(&last_wake_time, pdMS_TO_TICKS(17));
     }
+
+    vTaskDelete(NULL);
+}
+
+void app_main(void) {
+    input_joystick_init();
+
+    xTaskCreate(frame_loop, "frame_loop", 256, NULL, 1, NULL);
+    vTaskStartScheduler();
+
+    for (;;) {}
 }

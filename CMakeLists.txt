@@ -13,11 +13,28 @@ project(handheld C)
 #   host-tests      -> host compiler      -> unit tests (ctest)
 if(CMAKE_CROSSCOMPILING)
     enable_language(ASM)
+    include(FetchContent)
+
+    # FreeRTOS
+    FetchContent_Declare(freertos_kernel
+        GIT_REPOSITORY https://github.com/FreeRTOS/FreeRTOS-Kernel.git
+        GIT_TAG V11.3.3
+        GIT_SHALLOW TRUE
+    )
+
 
     add_executable(handheld)
 
     # CubeMX part: HAL, startup, Core/, defines, include paths
     add_subdirectory(cubemx/cmake/stm32cubemx)
+
+    add_library(freertos_config INTERFACE)
+    target_include_directories(freertos_config SYSTEM INTERFACE freertos)
+
+    set(FREERTOS_PORT GCC_ARM_CM4F CACHE STRING "")
+    set(FREERTOS_HEAP 4 CACHE STRING "")
+    target_link_libraries(freertos_config INTERFACE stm32cubemx)
+    FetchContent_MakeAvailable(freertos_kernel)
 
     # Own code
     target_sources(handheld PRIVATE
@@ -34,9 +51,11 @@ if(CMAKE_CROSSCOMPILING)
 
     target_link_libraries(handheld
         stm32cubemx
+        freertos_kernel
     )
 else()
     enable_language(CXX)
     enable_testing()
     add_subdirectory(tests)
 endif()
+
