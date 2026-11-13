@@ -37,7 +37,8 @@ static void audio_task(void *arg) {
         static int16_t level = 8000;
 
         int16_t *out = &audio_buf[half * AUDIO_HALF_SAMPLES];
-        for (uint32_t i = 0; i < AUDIO_HALF_SAMPLES; ++i) {
+
+        for (uint32_t i = 0; i < AUDIO_HALF_FRAMES; ++i) {
             out[2 * i] = level;
             out[2 * i + 1] = level;
             if (++phase == 55) {
