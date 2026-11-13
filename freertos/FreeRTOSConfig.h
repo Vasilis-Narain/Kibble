@@ -31,12 +31,13 @@ extern uint32_t SystemCoreClock; /* kept up to date by the HAL (system_stm32h7xx
 #define configUSE_TICK_HOOK 0
 #define configUSE_MALLOC_FAILED_HOOK 1   /* you implement vApplicationMallocFailedHook() */
 #define configCHECK_FOR_STACK_OVERFLOW 2 /* you implement vApplicationStackOverflowHook() */
-#define configASSERT(x)                \
-    do {                               \
-        if (!(x)) {                    \
-            __asm volatile("cpsid i"); \
-            for (;;) {}                \
-        }                              \
+#define configASSERT(x)                  \
+    do {                                 \
+        if (!(x)) {                      \
+            __asm__ volatile("bkpt #0"); \
+            __asm__ volatile("cpsid i"); \
+            for (;;) {}                  \
+        }                                \
     } while (0)
 
 /* ---- Software timers ------------------------------------------------------ */

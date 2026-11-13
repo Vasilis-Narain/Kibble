@@ -6,6 +6,7 @@
 #include "task.h"
 #include "main.h"
 #include "input.h"
+#include "audio.h"
 
 void vApplicationMallocFailedHook(void) {
     configASSERT(0);
@@ -17,12 +18,16 @@ void vApplicationStackOverflowHook(TaskHandle_t t, char *n) {
     configASSERT(0);
 }
 
-void frame_loop(void *pvParameters) {
+static void frame_loop(void *pvParameters) {
+    (void)pvParameters;
+
     TickType_t last_wake_time = xTaskGetTickCount();
     static uint32_t frame = 0;
     for (;;) {
         input_poll();
 
+        // we don't want printf in actual tasks.
+        // create gatekeeper with a q
         if (input_is_key_pressed(INPUT_A)) {
             printf("Input A is pressed\r\n");
         }
@@ -45,6 +50,7 @@ void frame_loop(void *pvParameters) {
 
 void app_main(void) {
     input_joystick_init();
+    audio_init();
 
     xTaskCreate(frame_loop, "frame_loop", 256, NULL, 1, NULL);
     vTaskStartScheduler();
