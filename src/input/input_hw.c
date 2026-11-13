@@ -67,6 +67,31 @@ void input_poll(void) {
     input_update(raw, joy_dma_buf[0], joy_dma_buf[1]);
 }
 
+//NOTE(vasilis): in the future this function will also be used to provide
+//userland joystick calibration. This is needed in case the device is started with the joystick not centred.
+#define CENTRE_SAMPLES_SHIFT 4u
+void input_calculate_centres(bool recalibrate) {
+    uint32_t tick = HAL_GetTick();
+
+    // If we're in init phase: short spinloop to make sure adc has done a couple conversions first
+    if (!recalibrate) {
+        while (HAL_GetTick() - tick < 20) {}
+        tick += 20;
+    }
+
+    // shouldnt overflow (worst case 4095 * 16 = 0xFFF0 < UINT16 max)
+    uint16_t centre_x = 0;
+    uint16_t centre_y = 0;
+    for (size_t i = 0; i < (1u << CENTRE_SAMPLES_SHIFT); ++i) { // take 16 samples (avg is a bit shift), at 10ms tick per sample this procedure takes 160 ms
+        centre_x += joy_dma_buf[0];
+        centre_y += joy_dma_buf[1];
+
+        while (HAL_GetTick() - tick < 10) {}
+        tick += 10;
+    }
+    input_adc_register_centres(centre_x >> CENTRE_SAMPLES_SHIFT, centre_y >> CENTRE_SAMPLES_SHIFT);
+}
+
 void input_joystick_init(void) {
     // NOTE(vasilis): .RAM_NOCACHE is NOLOAD so we need to init
     // 12 bit adc, max value 0..4095, midpoint is ~2048
@@ -80,4 +105,6 @@ void input_joystick_init(void) {
     if (HAL_ADC_Start_DMA(joy_adc, (uint32_t *)joy_dma_buf, JOY_DMA_BUF_LEN) != HAL_OK) {
         Error_Handler();
     }
+
+    input_calculate_centres(false);
 }

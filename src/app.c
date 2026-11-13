@@ -22,7 +22,9 @@ void app_main(void) {
 
         if (++frame % 30 == 0) {
             HAL_GPIO_TogglePin(PWR_LED_GPIO_Port, PWR_LED_Pin);
-            printf("%u %u\r\n", input_state_adc_raw(0), input_state_adc_raw(1));
+            int32_t x = (int32_t)(input_get_joy_axis_movement(AXIS_X) * 100);
+            int32_t y = (int32_t)(input_get_joy_axis_movement(AXIS_Y) * 100);
+            printf("%ld %ld\r\n", (long)x, (long)y);
         }
 
         while (HAL_GetTick() - tick < 17) {}

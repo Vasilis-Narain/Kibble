@@ -35,11 +35,19 @@ typedef enum {
     INPUT_NUMBER,
 } BtnInputFlagBit;
 
+typedef enum {
+    AXIS_X = 0,
+    AXIS_Y,
+    AXIS_NUMBER,
+} JoyAxis;
+
 typedef struct {
     uint32_t curr;
     uint32_t last;
-    uint16_t adc_x_raw;
-    uint16_t adc_y_raw;
+
+    // x, y take values between -1 and 1
+    float joy_x;
+    float joy_y;
 } InputState;
 
 #define BTN_INPUT_MASK(bit_pos) (1u << (bit_pos))
@@ -48,7 +56,9 @@ static_assert(INPUT_NUMBER == 14, "InputFlagBit enum must have 14 inputs!");
 
 // Application api
 void input_joystick_init(void);
-void input_poll(void); // NOTE(vasilis): to be called once per frame
+void input_poll(void);
+void input_adc_register_centres(uint16_t x, uint16_t y);
+void input_calculate_centres(bool recalibrate);
 
 // tmp function for testing
 uint16_t input_state_adc_raw(uint32_t axis);
@@ -59,8 +69,9 @@ bool input_is_key_pressed(BtnInputFlagBit btn);
 bool input_is_key_up(BtnInputFlagBit btn);
 bool input_is_key_released(BtnInputFlagBit btn);
 bool input_is_key_held(BtnInputFlagBit btn);
+float input_get_joy_axis_movement(JoyAxis axis);
 
 // Internal use
-void input_update(uint32_t raw_btns, uint32_t raw_adc_x, uint32_t raw_adc_y);
+void input_update(uint32_t raw_btns, uint16_t raw_adc_x, uint16_t raw_adc_y);
 
 #endif /* __INPUT_H */
