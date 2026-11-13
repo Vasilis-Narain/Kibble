@@ -8,6 +8,7 @@ extern "C" {
 TEST_GROUP(inputs_test_group){
     // init before each test
     void setup(){
+        input_adc_register_centres(2000,2000);
         input_update(0, 0, 0);
         input_update(0, 0, 0);
     }
@@ -16,6 +17,21 @@ TEST_GROUP(inputs_test_group){
     void teardown() {
     }
 }; 
+
+TEST(inputs_test_group, adc_scale) {
+    input_update(0, 3000, 1000);
+    DOUBLES_EQUAL(input_get_joy_axis_movement(AXIS_X), 0.5, 0.2);
+    DOUBLES_EQUAL(input_get_joy_axis_movement(AXIS_Y), -0.5, 0.2);
+}
+
+TEST(inputs_test_group, adc_scale_min_max) {
+    input_update(0, 4095, 0);
+    DOUBLES_EQUAL(input_get_joy_axis_movement(AXIS_X), 1, 0);
+    DOUBLES_EQUAL(input_get_joy_axis_movement(AXIS_Y), -1, 0);
+    input_update(0, 0, 4095);
+    DOUBLES_EQUAL(input_get_joy_axis_movement(AXIS_Y), 1, 0);
+    DOUBLES_EQUAL(input_get_joy_axis_movement(AXIS_X), -1, 0);
+}
 
 TEST(inputs_test_group, press_is_pressed_and_down) {
     input_update(BTN_INPUT_MASK(INPUT_A), 0,  0);

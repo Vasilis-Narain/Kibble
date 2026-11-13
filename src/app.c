@@ -27,6 +27,7 @@ void app_main(void) {
             printf("%ld %ld\r\n", (long)x, (long)y);
         }
 
+        // NOTE(vasilis): freeRTOS provides a delayUntil() type function which will be used instead of this pattern
         while (HAL_GetTick() - tick < 17) {}
         tick += 17;
     }
