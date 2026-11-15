@@ -43,12 +43,14 @@ if(CMAKE_CROSSCOMPILING)
         src/input/input.c
         src/input/input_hw.c
         src/audio/audio_hw.c
+        src/log/log.c
     )
 
     target_include_directories(handheld PRIVATE
         src
         src/input
         src/audio
+        src/log
     )
 
     target_link_libraries(handheld
