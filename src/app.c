@@ -52,7 +52,10 @@ void app_main(void) {
     input_joystick_init();
     audio_init();
 
-    xTaskCreate(frame_loop, "frame_loop", 256, NULL, 1, NULL);
+    if (xTaskCreate(frame_loop, "frame_loop", 256, NULL, 1, NULL) != pdPASS) {
+        // NOTE(vasilis): fail here means insufficient heap memory for task
+        Error_Handler();
+    }
     vTaskStartScheduler();
 
     for (;;) {}
