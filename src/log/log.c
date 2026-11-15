@@ -52,7 +52,7 @@ void log_printf(const char *fmt, ...) {
     (void)xQueueSend(log_q, &out, 0);
 }
 
-//NOTE(vasilis): recommended to use this sparringly
+//NOTE(vasilis): Are you sure you need to log from an ISR?
 void log_printf_FromISR(const char *fmt, ...) {
     if (log_q == NULL) {
         return;
@@ -74,6 +74,7 @@ void log_printf_FromISR(const char *fmt, ...) {
     portYIELD_FROM_ISR(woken);
 }
 
+//NOTE(vasilis): Returns `false` on failure
 bool log_init(void) {
     log_q = xQueueCreate(5, sizeof(LogMsg));
 

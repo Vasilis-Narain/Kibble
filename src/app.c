@@ -50,7 +50,10 @@ static void frame_loop(void *pvParameters) {
 void app_main(void) {
     input_joystick_init();
     audio_init();
-    log_init();
+
+    if (log_init() == false) {
+        Error_Handler();
+    }
 
     if (xTaskCreate(frame_loop, "frame_loop", 512, NULL, 2, NULL) != pdPASS) {
         // NOTE(vasilis): fail here means insufficient heap memory for task
