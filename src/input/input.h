@@ -60,9 +60,6 @@ void input_poll(void);
 void input_adc_register_centres(uint16_t x, uint16_t y);
 void input_calculate_centres(bool recalibrate);
 
-// tmp function for testing
-uint16_t input_state_adc_raw(uint32_t axis);
-
 // Raylib style userland api
 bool input_is_key_down(BtnInputFlagBit btn);
 bool input_is_key_pressed(BtnInputFlagBit btn);
