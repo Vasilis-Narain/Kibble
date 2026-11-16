@@ -23,6 +23,8 @@ static const Note song[] = {
 };
 // _testing melody
 
+//TODO(vasilis): this is a tmp sequencer for a single voice.
+//Needs to be an actual mixer :D
 void audio_mix(int16_t *out) {
     static uint32_t note_idx = 0;
     static uint32_t frames_left = 0;
