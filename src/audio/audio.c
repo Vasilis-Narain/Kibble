@@ -3,7 +3,6 @@
 #include <stdint.h>
 #include <string.h>
 
-#define AUDIO_MASTER_MAX_GAIN 32
 static int32_t master_volume = AUDIO_MASTER_MAX_GAIN;
 void audio_set_master_volume(float volume) {
     if (volume > 1.0f) {

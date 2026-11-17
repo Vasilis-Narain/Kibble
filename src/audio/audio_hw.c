@@ -58,5 +58,4 @@ void audio_init(void) {
     if (xTaskCreate(audio_task, "audio_task", 512, NULL, 6, &audio_task_handle) != pdPASS) {
         Error_Handler();
     }
-    audio_set_frames_per_beat_from_bpm(120);
 }

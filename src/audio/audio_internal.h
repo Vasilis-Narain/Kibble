@@ -5,6 +5,8 @@
 
 #include "audio.h"
 
+#define AUDIO_MASTER_MAX_GAIN 32
+
 #define AUDIO_SAMPLE_RATE 48000u
 #define AUDIO_HALF_FRAMES 256u
 #define AUDIO_HALF_SAMPLES (AUDIO_HALF_FRAMES * 2u)
@@ -20,6 +22,7 @@ enum {
 
 // SFX
 #define AUDIO_SFX_POOL_SIZE 128000u
+#define AUDIO_SFX_MAX_SAMPLE_SIZE 0xFFFFu
 #define AUDIO_SFX_MAX_NUMBER 64u
 
 typedef struct {

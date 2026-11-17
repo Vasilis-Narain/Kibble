@@ -17,7 +17,7 @@ static uint32_t sfx_bytes(uint8_t format, uint32_t len) {
     case SFX_PCM16:
         return len * 2u;
     case SFX_ADPCM:
-        return (len + 1u) / 2u; // 4 bits per sample, round up
+        return (len + 1u) / 2u;
     default:
         return 0; // unknown format → load fails
     }
@@ -25,11 +25,15 @@ static uint32_t sfx_bytes(uint8_t format, uint32_t len) {
 
 // copies into sfx pool and returns handle.
 Sfx audio_sfx_load(const void *pcm, uint32_t len, uint16_t sample_rate, uint8_t format) {
-    if (len == 0 || len > AUDIO_SFX_POOL_SIZE) {
+    if (len == 0 || len > AUDIO_SFX_MAX_SAMPLE_SIZE || sample_rate == 0) {
         return AUDIO_SFX_INVALID;
     }
 
     uint32_t bytes = sfx_bytes(format, len);
+    if (bytes == 0) {
+        return AUDIO_SFX_INVALID;
+    }
+
     uint32_t padded = (bytes + 3u) & ~3u;
 
     if (sfx_count == AUDIO_SFX_MAX_NUMBER) {
