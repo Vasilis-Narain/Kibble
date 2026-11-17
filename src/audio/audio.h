@@ -3,13 +3,22 @@
 
 #include <stdint.h>
 
-#define AUDIO_SAMPLE_RATE 48000u
-#define AUDIO_HALF_FRAMES 256u
-#define AUDIO_HALF_SAMPLES (AUDIO_HALF_FRAMES * 2u)
+typedef uint16_t Sfx;
+typedef uint8_t VoiceHandle;
+#define AUDIO_SFX_INVALID 0xFFFFu
+#define AUDIO_VOICE_INVALID 0xFFu
 
 void audio_init(void);
-void audio_mix(int16_t *out);
+Sfx audio_sfx_load(const void *pcm, uint32_t len, uint16_t rate, uint8_t format);
+void audio_sfx_reset(void);
+VoiceHandle audio_play_sfx(Sfx s, float volume);
+void audio_stop(VoiceHandle v);
 void audio_set_master_volume(float volume);
-void audio_set_frames_per_beat_from_bpm(uint32_t bpm);
 
-#endif /* __AUDIO_H */
+enum {
+    SFX_PCM8 = 0,
+    SFX_PCM16,
+    SFX_ADPCM,
+};
+
+#endif // __AUDIO_H

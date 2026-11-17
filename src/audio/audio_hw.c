@@ -1,4 +1,4 @@
-#include "audio.h"
+#include "audio_internal.h"
 #include <string.h>
 
 #include "mem_sections.h"
@@ -31,7 +31,6 @@ static void audio_task(void *arg) {
         xTaskNotifyWait(0, 0, &half, portMAX_DELAY);
 
         int16_t *out = &audio_buf[half * AUDIO_HALF_SAMPLES];
-
         audio_mix(out);
     }
 

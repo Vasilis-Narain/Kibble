@@ -44,6 +44,8 @@ if(CMAKE_CROSSCOMPILING)
         src/input/input_hw.c
         src/audio/audio.c
         src/audio/audio_hw.c
+        src/audio/audio_sfx.c
+        src/audio/audio_voice.c
         src/log/log.c
     )
 
