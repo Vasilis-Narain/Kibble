@@ -1,6 +1,7 @@
 #include "audio.h"
 #include <string.h>
 
+#include "mem_sections.h"
 #include "FreeRTOS.h" // IWYU pragma: keep
 #include "task.h"
 #include "main.h"
@@ -9,7 +10,7 @@
 static SAI_HandleTypeDef *const audio_handle = &hsai_BlockA1;
 static TaskHandle_t audio_task_handle;
 
-__attribute__((section(".RAM_NOCACHE"), aligned(32))) static int16_t audio_buf[AUDIO_HALF_SAMPLES * 2u];
+DMA_NOCACHE static int16_t audio_buf[AUDIO_HALF_SAMPLES * 2u];
 
 static void audio_task(void *arg) {
     (void)arg;

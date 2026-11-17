@@ -9,6 +9,7 @@
 
 void audio_init(void);
 void audio_mix(int16_t *out);
+void audio_set_master_volume(float volume);
 void audio_set_frames_per_beat_from_bpm(uint32_t bpm);
 
 #endif /* __AUDIO_H */
