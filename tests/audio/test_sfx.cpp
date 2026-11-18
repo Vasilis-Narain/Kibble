@@ -36,3 +36,12 @@ TEST(audio_sfx_test_group, load_valid_pcm16_copies_data_and_fills_desc) {
     CHECK_EQUAL(256, desc->volume);
 }
 
+TEST(audio_sfx_test_group, load_len_input_zero) {
+    Sfx sound = audio_sfx_load(clip16, 0, 1.0f, 48000u, SFX_PCM16, 1);
+    CHECK_EQUAL(AUDIO_SFX_INVALID, sound);
+}
+
+TEST(audio_sfx_test_group, load_len_input_too_big) {
+    Sfx sound = audio_sfx_load(clip16, UINT32_MAX, 1.0f, 48000u, SFX_PCM16, 1);
+    CHECK_EQUAL(AUDIO_SFX_INVALID, sound);
+}
