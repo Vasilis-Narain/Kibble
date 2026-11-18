@@ -14,7 +14,7 @@ void audio_set_master_volume(float volume) {
     master_volume = (int32_t)(AUDIO_MASTER_MAX_GAIN * volume);
 }
 
-VoiceHandle audio_play_sfx(Sfx sfx, float volume) {
+VoiceHandle audio_play_sfx(Sfx sfx) {
     const SfxDesc *desc = audio_sfx_get(sfx);
     if (!desc) {
         return AUDIO_VOICE_INVALID;
@@ -23,8 +23,20 @@ VoiceHandle audio_play_sfx(Sfx sfx, float volume) {
     if (voice == AUDIO_VOICE_INVALID) {
         return voice;
     }
-    audio_voice_start(voice, desc->data, desc->len, desc->format, desc->sample_rate, volume, VOICE_SFX);
+    audio_voice_start(voice, desc->data, desc->len, desc->format, desc->sample_rate, desc->volume, VOICE_SFX);
     return voice;
+}
+
+void audio_stop(VoiceHandle voice) {
+    audio_voice_stop(voice);
+}
+
+void audio_pause(VoiceHandle voice) {
+    audio_voice_pause(voice);
+}
+
+void audio_resume(VoiceHandle voice) {
+    audio_voice_resume(voice);
 }
 
 void audio_mix(int16_t *out) {

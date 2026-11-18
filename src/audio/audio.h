@@ -10,10 +10,15 @@ typedef uint16_t Sfx;
 typedef uint8_t VoiceHandle;
 
 void audio_init(void);
-Sfx audio_sfx_load(const void *pcm, uint32_t len, uint16_t rate, uint8_t format);
+Sfx audio_sfx_load(const void *pcm, uint32_t len, float volume, uint16_t rate, uint8_t format);
 void audio_sfx_reset(void);
-VoiceHandle audio_play_sfx(Sfx s, float volume);
-void audio_stop(VoiceHandle v);
+
+VoiceHandle audio_play_sfx(Sfx sfx);
+
+void audio_stop(VoiceHandle voice);
+void audio_pause(VoiceHandle voice);
+void audio_resume(VoiceHandle voice);
+
 void audio_set_master_volume(float volume);
 
 enum {

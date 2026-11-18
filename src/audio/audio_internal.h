@@ -28,6 +28,7 @@ enum {
 typedef struct {
     const void *data;
     uint32_t len;
+    int32_t volume;
     uint16_t sample_rate;
     uint8_t format;
 } SfxDesc;
@@ -37,11 +38,15 @@ void audio_mix(int16_t *out);
 
 //audio_voice.c
 VoiceHandle audio_voice_alloc(uint32_t first, uint32_t last);
-void audio_voice_start(VoiceHandle voice, const void *data, uint32_t len, uint8_t format, uint16_t rate, float volume, uint8_t kind);
+void audio_voice_start(VoiceHandle voice, const void *data, uint32_t len, uint8_t format, uint16_t rate, int32_t volume, uint8_t kind);
 void audio_voice_stop(VoiceHandle voice);
+void audio_voice_resume(VoiceHandle voice);
+void audio_voice_pause(VoiceHandle voice);
 void audio_voice_mix_into(int32_t *acc, uint32_t frames);
+void audio_voice_stop_many(uint32_t start, uint32_t end);
 
 //audio_sfx.c
 const SfxDesc *audio_sfx_get(Sfx sfx);
+void audio_sfx_set_volume(Sfx sfx, float volume);
 
 #endif /* __AUDIO_INTERNAL_H */

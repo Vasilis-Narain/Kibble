@@ -1,6 +1,9 @@
 #include "audio_internal.h"
 
 #include <stdint.h>
+#include <assert.h>
+
+#include "mem_sections.h"
 
 typedef struct {
     const void *data;
@@ -10,6 +13,7 @@ typedef struct {
     int32_t volume;
     uint8_t format;
     uint8_t flags;
+    uint8_t paused;
 } Voice;
 
 static Voice voices[AUDIO_MAX_VOICES];
@@ -24,21 +28,16 @@ VoiceHandle audio_voice_alloc(uint32_t first, uint32_t last) {
     return AUDIO_VOICE_INVALID;
 }
 
-void audio_voice_start(VoiceHandle voice, const void *data, uint32_t len, uint8_t format, uint16_t rate, float volume, uint8_t kind) {
-    if (volume < 0.0f) {
-        volume = 0;
-    }
-    if (volume > 1.0f) {
-        volume = 1.0f;
-    }
+void audio_voice_start(VoiceHandle voice, const void *data, uint32_t len, uint8_t format, uint16_t rate, int32_t volume, uint8_t kind) {
     voices[voice].data = data;
     voices[voice].format = format;
     voices[voice].len = len;
     voices[voice].pos = 0;
     voices[voice].step = ((uint32_t)rate << 16) / AUDIO_SAMPLE_RATE;
-    voices[voice].volume = (int32_t)(volume * 256.0f);
+    voices[voice].volume = volume;
+    voices[voice].paused = 0;
 
-    __atomic_signal_fence(__ATOMIC_SEQ_CST); // compiler fence
+    COMPILER_FENCE;
 
     voices[voice].flags = VOICE_ACTIVE | kind;
 }
@@ -69,7 +68,7 @@ static void mix_pcm8(Voice *v, int32_t *acc, uint32_t frames) {
 void audio_voice_mix_into(int32_t *acc, uint32_t frames) {
     for (uint32_t v_index = 0; v_index < AUDIO_MAX_VOICES; ++v_index) {
         Voice *v = &voices[v_index];
-        if (!(v->flags & VOICE_ACTIVE)) {
+        if (!(v->flags & VOICE_ACTIVE) || v->paused) {
             continue;
         }
         switch (v->format) {
@@ -89,4 +88,30 @@ void audio_voice_mix_into(int32_t *acc, uint32_t frames) {
     }
 }
 
-void audio_voice_stop(VoiceHandle voice);
+void audio_voice_pause(VoiceHandle voice) {
+    if (voice >= AUDIO_MAX_VOICES) {
+        return;
+    }
+    voices[voice].paused = 1;
+}
+void audio_voice_resume(VoiceHandle voice) {
+    if (voice >= AUDIO_MAX_VOICES) {
+        return;
+    }
+    voices[voice].paused = 0;
+}
+
+void audio_voice_stop(VoiceHandle voice) {
+    if (voice >= AUDIO_MAX_VOICES) {
+        return;
+    }
+    voices[voice].flags = 0;
+}
+
+void audio_voice_stop_many(uint32_t start, uint32_t end) {
+    assert(start < AUDIO_MAX_VOICES);
+    assert(end <= AUDIO_MAX_VOICES);
+    for (; start < end; ++start) {
+        audio_voice_stop(start);
+    }
+}
