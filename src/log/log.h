@@ -1,3 +1,9 @@
+/*
+ * SPDX-FileCopyrightText: 2026 Vasilis Narain
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
 #ifndef __LOG_H
 #define __LOG_H
 

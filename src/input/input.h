@@ -1,3 +1,9 @@
+/*
+ * SPDX-FileCopyrightText: 2026 Vasilis Narain
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
 #ifndef __INPUT_H
 #define __INPUT_H
 

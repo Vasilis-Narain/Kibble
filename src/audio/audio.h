@@ -1,3 +1,9 @@
+/*
+ * SPDX-FileCopyrightText: 2026 Vasilis Narain
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
 #ifndef __AUDIO_H
 #define __AUDIO_H
 

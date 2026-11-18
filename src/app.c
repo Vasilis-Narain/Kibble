@@ -1,3 +1,9 @@
+/*
+ * SPDX-FileCopyrightText: 2026 Vasilis Narain
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
 #include "app.h"
 
 #include "FreeRTOS.h" // IWYU pragma: keep

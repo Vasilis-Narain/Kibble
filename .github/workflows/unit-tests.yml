@@ -8,6 +8,17 @@ on:
   pull_request:
 
 jobs:
+  license-check:
+    runs-on: ubuntu-latest
+    name: REUSE license check
+    steps:
+
+      - name: Check out this repo
+        uses: actions/checkout@v7
+
+      - name: REUSE lint
+        uses: fsfe/reuse-action@v6
+
   build-and-test:
     runs-on: ubuntu-latest
     name: Unit tests and firmware build (Docker)

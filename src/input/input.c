@@ -1,3 +1,9 @@
+/*
+ * SPDX-FileCopyrightText: 2026 Vasilis Narain
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
 /* High-level input logic file */
 #include "input.h"
 

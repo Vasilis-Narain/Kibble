@@ -1,3 +1,9 @@
+/*
+ * SPDX-FileCopyrightText: 2026 Vasilis Narain
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
 #ifndef __MEM_SECTIONS_H
 #define __MEM_SECTIONS_H
 
