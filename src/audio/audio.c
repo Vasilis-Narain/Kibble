@@ -17,7 +17,7 @@ void audio_set_master_volume(float volume) {
 // Adds the loaded `sfx` to the voices that need to get mixed and returns VoiceHandle.
 // VoiceHandle is then used for all the generic audio functions (_stop, _pause, _resume...)
 VoiceHandle audio_play_sfx(Sfx sfx) {
-    const SfxDesc *desc = audio_sfx_get(sfx);
+    const SfxDesc *desc = audio_sfx_get_desc(sfx);
     if (!desc) {
         return AUDIO_VOICE_INVALID;
     }
