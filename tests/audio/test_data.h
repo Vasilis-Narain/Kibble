@@ -1,0 +1,11 @@
+#ifndef TEST_DATA_H
+#define TEST_DATA_H
+#include <stdint.h>
+// shared data
+extern const int16_t big_clip[64000];
+extern const uint32_t BIG_CLIP_LEN;
+
+static const int16_t clip16[] = {100, -200, 300, -400};
+static const uint32_t CLIP16_LEN = sizeof(clip16) / sizeof(clip16[0]);
+
+#endif
