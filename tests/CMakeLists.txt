@@ -20,6 +20,11 @@ function(add_module_test module)
     file(GLOB test_src ${CMAKE_CURRENT_SOURCE_DIR}/${module}/*.cpp)
 
     add_executable(${module}_tests ${module_src} ${test_src})
+
+    target_compile_options(${module}_tests PRIVATE
+        "$<$<COMPILE_LANGUAGE:C>:-Wall;-Wextra>"
+    )
+
     target_include_directories(${module}_tests PRIVATE 
         ${PROJECT_SOURCE_DIR}/src/${module}
         ${PROJECT_SOURCE_DIR}/src

@@ -37,9 +37,8 @@ if(CMAKE_CROSSCOMPILING)
     FetchContent_MakeAvailable(freertos_kernel)
 
     # Own code
-    target_sources(handheld PRIVATE
+    set(APP_SRC
         src/app.c
-        # more files here
         src/input/input.c
         src/input/input_hw.c
         src/audio/audio.c
@@ -48,6 +47,8 @@ if(CMAKE_CROSSCOMPILING)
         src/audio/audio_voice.c
         src/log/log.c
     )
+    target_sources(handheld PRIVATE ${APP_SRC})
+    set_source_files_properties(${APP_SRC} PROPERTIES COMPILE_OPTIONS "-Wextra")
 
     target_include_directories(handheld PRIVATE
         src
