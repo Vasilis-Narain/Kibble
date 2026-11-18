@@ -49,7 +49,7 @@ void audio_voice_mix_into(int32_t *acc, uint32_t frames);
 void audio_voice_stop_many(uint32_t start, uint32_t end);
 
 //audio_sfx.c
-const SfxDesc *audio_sfx_get(Sfx sfx);
+const SfxDesc *audio_sfx_get_desc(Sfx sfx);
 void audio_sfx_set_volume(Sfx sfx, float volume);
 
 #endif /* __AUDIO_INTERNAL_H */

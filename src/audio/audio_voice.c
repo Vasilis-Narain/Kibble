@@ -5,7 +5,6 @@
 #include <stdbool.h>
 
 #include "mem_sections.h"
-#include "log/log.h" // use this method so tests resolve
 
 typedef struct {
     const void *data;
@@ -131,9 +130,10 @@ bool audio_voice_isplaying(VoiceHandle voice) {
     return !voices[voice].paused && (voices[voice].flags & VOICE_ACTIVE);
 }
 
+// will pause if active and playing
+// no effect if not active
 void audio_voice_pause(VoiceHandle voice) {
     if (voice >= AUDIO_MAX_VOICES) {
-        LOG("voice pause failed for voice: %u\r\n", voice);
         return;
     }
     voices[voice].paused = 1;

@@ -86,7 +86,7 @@ Sfx audio_sfx_load(const void *pcm, uint32_t len, float volume, uint16_t sample_
     return sfx_count++;
 }
 
-const SfxDesc *audio_sfx_get(Sfx sfx) {
+const SfxDesc *audio_sfx_get_desc(Sfx sfx) {
     return (sfx < sfx_count) ? &sfx_table[sfx] : NULL;
 }
 

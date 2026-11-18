@@ -20,9 +20,9 @@ TEST_GROUP(audio_sfx_test_group){
 }; 
 
 TEST(audio_sfx_test_group, load_valid_pcm16_copies_data_and_fills_desc) {
-    Sfx sound = audio_sfx_load(clip16, CLIP16_LEN, 1.0f, 48000u, SFX_PCM16);
+    Sfx sound = audio_sfx_load(clip16, CLIP16_LEN, 1.0f, 48000u, SFX_PCM16, 1);
     CHECK_EQUAL(0, sound);
-    const SfxDesc *desc = audio_sfx_get(sound);
+    const SfxDesc *desc = audio_sfx_get_desc(sound);
     CHECK(desc != NULL);
     CHECK(desc->data != clip16);
     MEMCMP_EQUAL(clip16, desc->data, sizeof(clip16));
