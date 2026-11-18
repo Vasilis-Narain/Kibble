@@ -37,7 +37,8 @@ void audio_sfx_set_volume(Sfx sfx, float volume) {
 }
 
 // copies into sfx pool and returns handle.
-Sfx audio_sfx_load(const void *pcm, uint32_t len, float volume, uint16_t sample_rate, uint8_t format) {
+// Clamps volume in [0,1] and max_instances in (0,max_voices - max_music_voices]
+Sfx audio_sfx_load(const void *pcm, uint32_t len, float volume, uint16_t sample_rate, uint8_t format, uint8_t max_instances) {
     if (len == 0 || len > AUDIO_SFX_MAX_SAMPLE_SIZE || sample_rate == 0) {
         return AUDIO_SFX_INVALID;
     }
@@ -65,12 +66,20 @@ Sfx audio_sfx_load(const void *pcm, uint32_t len, float volume, uint16_t sample_
         volume = 0.0f;
     }
 
+    if (max_instances == 0) {
+        max_instances = 1;
+    }
+    if (max_instances > (AUDIO_MAX_VOICES - AUDIO_MAX_MUSIC_VOICES)) {
+        max_instances = AUDIO_MAX_VOICES - AUDIO_MAX_MUSIC_VOICES;
+    }
+
     sfx_table[sfx_count] = (SfxDesc){
         .data = &sfx_pool[sfx_pool_used],
         .len = len,
         .volume = (int32_t)(volume * 256.0f),
         .sample_rate = sample_rate,
         .format = format,
+        .max_instances = max_instances,
     };
 
     sfx_pool_used += padded;

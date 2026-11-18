@@ -2,8 +2,10 @@
 
 #include <stdint.h>
 #include <assert.h>
+#include <stdbool.h>
 
 #include "mem_sections.h"
+#include "log/log.h" // use this method so tests resolve
 
 typedef struct {
     const void *data;
@@ -11,6 +13,7 @@ typedef struct {
     uint32_t step;
     uint32_t len;
     int32_t volume;
+    Sfx sfx;
     uint8_t format;
     uint8_t flags;
     uint8_t paused;
@@ -19,7 +22,7 @@ typedef struct {
 static Voice voices[AUDIO_MAX_VOICES];
 
 // finds next free voice
-VoiceHandle audio_voice_alloc(uint32_t first, uint32_t last) {
+static VoiceHandle audio_voice_alloc(uint32_t first, uint32_t last) {
     for (uint32_t i = first; i < last; ++i) {
         if (!(voices[i].flags & VOICE_ACTIVE)) {
             return i;
@@ -28,7 +31,39 @@ VoiceHandle audio_voice_alloc(uint32_t first, uint32_t last) {
     return AUDIO_VOICE_INVALID;
 }
 
-void audio_voice_start(VoiceHandle voice, const void *data, uint32_t len, uint8_t format, uint16_t rate, int32_t volume, uint8_t kind) {
+VoiceHandle audio_voice_sfx_alloc(Sfx sfx, const SfxDesc *desc) {
+    uint32_t count = 0;
+    uint32_t max_pos_index = AUDIO_VOICE_INVALID;
+    uint32_t max_pos = 0;
+
+    // count how many active instances of the current sfx we have in voices
+    for (uint32_t i = AUDIO_MAX_MUSIC_VOICES; i < AUDIO_MAX_VOICES; ++i) {
+        if ((voices[i].flags & VOICE_ACTIVE) && voices[i].sfx == sfx) {
+            count++;
+
+            if (voices[i].pos >= max_pos) {
+                max_pos = voices[i].pos;
+                max_pos_index = i;
+            }
+        }
+    }
+
+    // if we can have more instances we alloc as usual
+    if (count < desc->max_instances) {
+        return audio_voice_alloc(AUDIO_MAX_MUSIC_VOICES, AUDIO_MAX_VOICES);
+    }
+
+    // resets 'oldest' (as in the voice with the max pos) voice
+    return (VoiceHandle)max_pos_index;
+}
+
+void audio_voice_start(VoiceHandle voice, Sfx sfx, const void *data, uint32_t len, uint8_t format, uint16_t rate, int32_t volume, uint8_t kind) {
+    // ensure the mixer skips this voice while we're updating it
+    voices[voice].flags = 0;
+
+    COMPILER_FENCE;
+
+    voices[voice].sfx = sfx;
     voices[voice].data = data;
     voices[voice].format = format;
     voices[voice].len = len;
@@ -53,6 +88,7 @@ static void mix_pcm16(Voice *v, int32_t *acc, uint32_t frames) {
         }
     }
 }
+
 static void mix_pcm8(Voice *v, int32_t *acc, uint32_t frames) {
     const uint8_t *data = v->data;
     for (uint32_t i = 0; i < frames; ++i) {
@@ -88,8 +124,16 @@ void audio_voice_mix_into(int32_t *acc, uint32_t frames) {
     }
 }
 
+bool audio_voice_isplaying(VoiceHandle voice) {
+    if (voice >= AUDIO_MAX_VOICES) {
+        return false;
+    }
+    return !voices[voice].paused && (voices[voice].flags & VOICE_ACTIVE);
+}
+
 void audio_voice_pause(VoiceHandle voice) {
     if (voice >= AUDIO_MAX_VOICES) {
+        LOG("voice pause failed for voice: %u\r\n", voice);
         return;
     }
     voices[voice].paused = 1;

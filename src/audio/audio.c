@@ -14,16 +14,19 @@ void audio_set_master_volume(float volume) {
     master_volume = (int32_t)(AUDIO_MASTER_MAX_GAIN * volume);
 }
 
+// Adds the loaded `sfx` to the voices that need to get mixed and returns VoiceHandle.
+// VoiceHandle is then used for all the generic audio functions (_stop, _pause, _resume...)
 VoiceHandle audio_play_sfx(Sfx sfx) {
     const SfxDesc *desc = audio_sfx_get(sfx);
     if (!desc) {
         return AUDIO_VOICE_INVALID;
     }
-    VoiceHandle voice = audio_voice_alloc(AUDIO_MAX_MUSIC_VOICES, AUDIO_MAX_VOICES);
+
+    VoiceHandle voice = audio_voice_sfx_alloc(sfx, desc);
     if (voice == AUDIO_VOICE_INVALID) {
         return voice;
     }
-    audio_voice_start(voice, desc->data, desc->len, desc->format, desc->sample_rate, desc->volume, VOICE_SFX);
+    audio_voice_start(voice, sfx, desc->data, desc->len, desc->format, desc->sample_rate, desc->volume, VOICE_SFX);
     return voice;
 }
 
@@ -37,6 +40,10 @@ void audio_pause(VoiceHandle voice) {
 
 void audio_resume(VoiceHandle voice) {
     audio_voice_resume(voice);
+}
+
+bool audio_is_playing(VoiceHandle voice) {
+    return audio_voice_isplaying(voice);
 }
 
 void audio_mix(int16_t *out) {

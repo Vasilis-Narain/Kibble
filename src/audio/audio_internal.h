@@ -2,6 +2,7 @@
 #define __AUDIO_INTERNAL_H
 
 #include <stdint.h>
+#include <stdbool.h>
 
 #include "audio.h"
 
@@ -31,17 +32,19 @@ typedef struct {
     int32_t volume;
     uint16_t sample_rate;
     uint8_t format;
+    uint8_t max_instances;
 } SfxDesc;
 
 //audio.c
 void audio_mix(int16_t *out);
 
 //audio_voice.c
-VoiceHandle audio_voice_alloc(uint32_t first, uint32_t last);
-void audio_voice_start(VoiceHandle voice, const void *data, uint32_t len, uint8_t format, uint16_t rate, int32_t volume, uint8_t kind);
+VoiceHandle audio_voice_sfx_alloc(Sfx sfx, const SfxDesc *desc);
+void audio_voice_start(VoiceHandle voice, Sfx sfx, const void *data, uint32_t len, uint8_t format, uint16_t rate, int32_t volume, uint8_t kind);
 void audio_voice_stop(VoiceHandle voice);
 void audio_voice_resume(VoiceHandle voice);
 void audio_voice_pause(VoiceHandle voice);
+bool audio_voice_isplaying(VoiceHandle voice);
 void audio_voice_mix_into(int32_t *acc, uint32_t frames);
 void audio_voice_stop_many(uint32_t start, uint32_t end);
 
