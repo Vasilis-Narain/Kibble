@@ -15,6 +15,7 @@
 #define DMA_NOCACHE
 #endif // __arm__
 
-#define COMPILER_FENCE __atomic_signal_fence(__ATOMIC_SEQ_CST) // compiler fence
+// Stops compiler from reordering loads
+#define COMPILER_FENCE __atomic_signal_fence(__ATOMIC_SEQ_CST)
 
 #endif // __MEM_SECIONS_H
