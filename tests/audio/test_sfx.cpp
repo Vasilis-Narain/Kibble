@@ -45,3 +45,14 @@ TEST(audio_sfx_test_group, load_len_input_too_big) {
     Sfx sound = audio_sfx_load(clip16, UINT32_MAX, 1.0f, 48000u, SFX_PCM16, 1);
     CHECK_EQUAL(AUDIO_SFX_INVALID, sound);
 }
+
+TEST(audio_sfx_test_group, load_too_many) {
+    Sfx sound;
+    for (size_t i = 0; i <= AUDIO_SFX_MAX_NUMBER; ++i) {
+        sound = audio_sfx_load(clip16, UINT32_MAX, 1.0f, 48000u, SFX_PCM16, 1);
+    }
+    CHECK_EQUAL(AUDIO_SFX_INVALID, sound);
+}
+
+
+
