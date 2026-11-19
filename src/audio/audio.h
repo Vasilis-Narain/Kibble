@@ -11,10 +11,10 @@
 #include <stdbool.h>
 
 #define AUDIO_SFX_INVALID 0xFFFFu
-#define AUDIO_VOICE_INVALID 0xFFu
+#define AUDIO_VOICE_INVALID 0xFFFFu
 
 typedef uint16_t Sfx;
-typedef uint8_t VoiceHandle;
+typedef uint16_t VoiceHandle;
 
 void audio_init(void);
 Sfx audio_sfx_load(const void *pcm, uint32_t len, float volume, uint16_t sample_rate, uint8_t format, uint8_t max_instances);
