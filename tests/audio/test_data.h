@@ -14,7 +14,7 @@ extern const uint32_t BIG_CLIP_LEN;
 static const int16_t clip16[] = {100, -200, 300, -400};
 static const uint32_t CLIP16_LEN = sizeof(clip16) / sizeof(clip16[0]);
 
-static const int8_t clip8[] = {100, -50, 127, -100};
+static const uint8_t clip8[] = {128, 255, 0, 200};
 static const uint32_t CLIP8_LEN = sizeof(clip8) / sizeof(clip8[0]);
 
 #endif
