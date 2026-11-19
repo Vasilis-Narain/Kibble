@@ -114,7 +114,7 @@ TEST(audio_voice_test_group, pcm16_voice_mix_into_pause_1_resume) {
     audio_voice_resume(voice2);
 
     // now voice1 should have finished
-    memset(acc, 0, AUDIO_HALF_FRAMES);
+    memset(acc, 0, sizeof(acc));
     audio_voice_mix_into(acc, AUDIO_HALF_FRAMES);
 
     for (size_t i = 0; i < CLIP16_LEN; ++i) {
@@ -142,7 +142,7 @@ TEST(audio_voice_test_group, pcm16_voice_mix_into_then_stop_all) {
     }
 
     audio_voice_stop_many(0, AUDIO_MAX_VOICES);
-    memset(acc, 0, AUDIO_HALF_FRAMES);
+    memset(acc, 0, sizeof(acc));
     audio_voice_mix_into(acc, AUDIO_HALF_FRAMES);
 
     for (size_t i = 0; i < AUDIO_HALF_FRAMES; ++i) {

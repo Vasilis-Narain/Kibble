@@ -23,7 +23,8 @@ TEST_GROUP(audio_sfx_test_group){
     }
 }; 
 
-TEST(audio_sfx_test_group, load_valid_pcm16_copies_data_and_fills_desc) {
+// PCM16
+TEST(audio_sfx_test_group, pcm16_load_valid_copies_data_and_fills_desc) {
     Sfx sound = audio_sfx_load(clip16, CLIP16_LEN, 1.0f, 48000u, SFX_PCM16, 1);
     CHECK_EQUAL(0, sound);
     const SfxDesc *desc = audio_sfx_get_desc(sound);
@@ -36,23 +37,82 @@ TEST(audio_sfx_test_group, load_valid_pcm16_copies_data_and_fills_desc) {
     CHECK_EQUAL(256, desc->volume);
 }
 
-TEST(audio_sfx_test_group, load_len_input_zero) {
+TEST(audio_sfx_test_group, pcm16_load_len_input_zero) {
     Sfx sound = audio_sfx_load(clip16, 0, 1.0f, 48000u, SFX_PCM16, 1);
     CHECK_EQUAL(AUDIO_SFX_INVALID, sound);
 }
 
-TEST(audio_sfx_test_group, load_len_input_too_big) {
+TEST(audio_sfx_test_group, pcm16_load_len_input_too_big) {
     Sfx sound = audio_sfx_load(clip16, UINT32_MAX, 1.0f, 48000u, SFX_PCM16, 1);
     CHECK_EQUAL(AUDIO_SFX_INVALID, sound);
 }
 
-TEST(audio_sfx_test_group, load_too_many) {
+TEST(audio_sfx_test_group, pcm16_load_too_many) {
     Sfx sound;
-    for (size_t i = 0; i <= AUDIO_SFX_MAX_NUMBER; ++i) {
+    for (size_t i = 0; i < AUDIO_SFX_MAX_NUMBER; ++i) {
         sound = audio_sfx_load(clip16, CLIP16_LEN, 1.0f, 48000u, SFX_PCM16, 1);
+        CHECK_EQUAL(i, sound);
     }
+    sound = audio_sfx_load(clip16, CLIP16_LEN, 1.0f, 48000u, SFX_PCM16, 1);
     CHECK_EQUAL(AUDIO_SFX_INVALID, sound);
 }
 
+TEST(audio_sfx_test_group, pcm16_load_full_reset_load_again) {
+    Sfx sound;
+    for (size_t i = 0; i < AUDIO_SFX_MAX_NUMBER; ++i) {
+        sound = audio_sfx_load(clip16, CLIP16_LEN, 1.0f, 48000u, SFX_PCM16, 1);
+        CHECK_EQUAL(i, sound);
+    }
+    audio_sfx_reset();
+    for (size_t i = 0; i < AUDIO_SFX_MAX_NUMBER; ++i) {
+        sound = audio_sfx_load(clip16, CLIP16_LEN, 1.0f, 48000u, SFX_PCM16, 1);
+        CHECK_EQUAL(i, sound);
+    }
+}
 
+// PCM8
+TEST(audio_sfx_test_group, pcm8_load_valid_copies_data_and_fills_desc) {
+    Sfx sound = audio_sfx_load(clip8, CLIP8_LEN, 1.0f, 48000u, SFX_PCM8, 1);
+    CHECK_EQUAL(0, sound);
+    const SfxDesc *desc = audio_sfx_get_desc(sound);
+    CHECK(desc != NULL);
+    CHECK(desc->data != clip8);
+    MEMCMP_EQUAL(clip8, desc->data, sizeof(clip8));
+    CHECK_EQUAL(CLIP8_LEN, desc->len);
+    CHECK_EQUAL(48000, desc->sample_rate);
+    CHECK_EQUAL(SFX_PCM8, desc->format);
+    CHECK_EQUAL(256, desc->volume);
+}
 
+TEST(audio_sfx_test_group, pcm8_load_len_input_zero) {
+    Sfx sound = audio_sfx_load(clip8, 0, 1.0f, 48000u, SFX_PCM8, 1);
+    CHECK_EQUAL(AUDIO_SFX_INVALID, sound);
+}
+
+TEST(audio_sfx_test_group, pcm8_load_len_input_too_big) {
+    Sfx sound = audio_sfx_load(clip8, UINT32_MAX, 1.0f, 48000u, SFX_PCM8, 1);
+    CHECK_EQUAL(AUDIO_SFX_INVALID, sound);
+}
+
+TEST(audio_sfx_test_group, pcm8_load_too_many) {
+    Sfx sound;
+    for (size_t i = 0; i < AUDIO_SFX_MAX_NUMBER; ++i) {
+        sound = audio_sfx_load(clip8, CLIP8_LEN, 1.0f, 48000u, SFX_PCM8, 1);
+        CHECK_EQUAL(i, sound);
+    }
+    sound = audio_sfx_load(clip8, CLIP8_LEN, 1.0f, 48000u, SFX_PCM8, 1);
+    CHECK_EQUAL(AUDIO_SFX_INVALID, sound);
+}
+
+TEST(audio_sfx_test_group, pcm8_load_full_reset_load_again) {
+    Sfx sound;
+    for (size_t i = 0; i < AUDIO_SFX_MAX_NUMBER; ++i) {
+        sound = audio_sfx_load(clip8, CLIP8_LEN, 1.0f, 48000u, SFX_PCM8, 1);
+        CHECK_EQUAL(i, sound);
+    }
+    audio_sfx_reset();
+    for (size_t i = 0; i < AUDIO_SFX_MAX_NUMBER; ++i) {
+        sound = audio_sfx_load(clip8, CLIP8_LEN, 1.0f, 48000u, SFX_PCM8, 1);
+        CHECK_EQUAL(i, sound);
+    }
+}
