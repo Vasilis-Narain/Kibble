@@ -97,7 +97,7 @@ static void mix_pcm16(Voice *v, int32_t *acc, uint32_t frames) {
 static void mix_pcm8(Voice *v, int32_t *acc, uint32_t frames) {
     const uint8_t *data = v->data;
     for (uint32_t i = 0; i < frames; ++i) {
-        acc[i] += ((((int32_t)data[v->pos >> 16] - 128) << 8) * v->volume) >> 8;
+        acc[i] += ((((int32_t)data[v->pos >> 16] - 128) * 256) * v->volume) >> 8; // * 256 rather than << 8 cause left shift on neg input is UB
         v->pos += v->step;
         if ((v->pos >> 16) >= v->len) {
             v->flags = 0;
