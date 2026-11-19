@@ -27,6 +27,8 @@ void vApplicationStackOverflowHook(TaskHandle_t t, char *n) {
     configASSERT(0);
 }
 
+//NOTE(vasilis): eventually the TE pin from the display will drive frame update
+//targetting 60fps
 static void frame_loop(void *pvParameters) {
     (void)pvParameters;
 
@@ -45,6 +47,9 @@ static void frame_loop(void *pvParameters) {
         }
         if (input_is_key_pressed(INPUT_JOY_SEL)) {
             log_printf("Input JOY_SEL is pressed\r\n");
+            //
+            //NOTE(vasilis): tmp for on-device testing of Sfx system
+            audio_play_sfx(laser);
         }
 
         if (++frame % 30 == 0) {

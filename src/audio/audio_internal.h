@@ -12,7 +12,7 @@
 
 #include "audio.h"
 
-#define AUDIO_MASTER_MAX_GAIN 32
+#define AUDIO_MASTER_MAX_GAIN 128
 
 #define AUDIO_SAMPLE_RATE 48000u
 #define AUDIO_HALF_FRAMES 256u
