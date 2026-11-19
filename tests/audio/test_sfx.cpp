@@ -42,6 +42,16 @@ TEST(audio_sfx_test_group, pcm16_load_len_input_zero) {
     CHECK_EQUAL(AUDIO_SFX_INVALID, sound);
 }
 
+TEST(audio_sfx_test_group, pcm16_load_invalid_format) {
+    Sfx sound = audio_sfx_load(clip16, 0, 1.0f, 48000u, 7, 1);
+    CHECK_EQUAL(AUDIO_SFX_INVALID, sound);
+}
+
+TEST(audio_sfx_test_group, pcm16_load_invalid_rate) {
+    Sfx sound = audio_sfx_load(clip16, 0, 1.0f, 0, 7, 1);
+    CHECK_EQUAL(AUDIO_SFX_INVALID, sound);
+}
+
 TEST(audio_sfx_test_group, pcm16_load_len_input_too_big) {
     Sfx sound = audio_sfx_load(clip16, AUDIO_SFX_MAX_SAMPLE_SIZE + 1, 1.0f, 48000u, SFX_PCM16, 1);
     CHECK_EQUAL(AUDIO_SFX_INVALID, sound);
