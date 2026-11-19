@@ -1,3 +1,9 @@
+/*
+ * SPDX-FileCopyrightText: 2026 Vasilis Narain
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
 /* Low_level input logic file */
 #include "input.h"
 
@@ -7,10 +13,11 @@
 #include "main.h"
 #include "adc.h"
 
-#define JOY_DMA_BUF_LEN 2u
+#include "mem_sections.h"
 
+#define JOY_DMA_BUF_LEN 2u
 static ADC_HandleTypeDef *const joy_adc = &hadc1;
-__attribute__((section(".RAM_NOCACHE"), aligned(32))) static volatile uint16_t joy_dma_buf[JOY_DMA_BUF_LEN];
+DMA_NOCACHE static volatile uint16_t joy_dma_buf[JOY_DMA_BUF_LEN];
 
 typedef struct {
     GPIO_TypeDef *port;

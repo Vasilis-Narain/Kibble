@@ -1,0 +1,8 @@
+CompileFlags:
+  CompilationDatabase: None
+  Add:
+    - -I../../src
+    - -I../../src/audio
+    - -I../../src/input
+    - -I../../src/log
+    - -I../../build/host-tests/_deps/cpputest-src/include

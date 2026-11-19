@@ -1,3 +1,9 @@
+/*
+ * SPDX-FileCopyrightText: 2026 Vasilis Narain
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
 #include "app.h"
 
 #include "FreeRTOS.h" // IWYU pragma: keep
@@ -6,6 +12,10 @@
 #include "input.h"
 #include "audio.h"
 #include "log.h"
+
+//NOTE(vasilis): tmp for on-device testing of Sfx system
+#include "laser_shoot.h"
+static Sfx laser;
 
 void vApplicationMallocFailedHook(void) {
     configASSERT(0);
@@ -17,6 +27,8 @@ void vApplicationStackOverflowHook(TaskHandle_t t, char *n) {
     configASSERT(0);
 }
 
+//NOTE(vasilis): eventually the TE pin from the display will drive frame update
+//targetting 60fps
 static void frame_loop(void *pvParameters) {
     (void)pvParameters;
 
@@ -29,9 +41,15 @@ static void frame_loop(void *pvParameters) {
         // create gatekeeper with a q
         if (input_is_key_pressed(INPUT_A)) {
             log_printf("Input A is pressed\r\n");
+
+            //NOTE(vasilis): tmp for on-device testing of Sfx system
+            audio_play_sfx(laser);
         }
         if (input_is_key_pressed(INPUT_JOY_SEL)) {
             log_printf("Input JOY_SEL is pressed\r\n");
+            //
+            //NOTE(vasilis): tmp for on-device testing of Sfx system
+            audio_play_sfx(laser);
         }
 
         if (++frame % 30 == 0) {
@@ -50,6 +68,9 @@ static void frame_loop(void *pvParameters) {
 void app_main(void) {
     input_joystick_init();
     audio_init();
+
+    //NOTE(vasilis): tmp for on-device testing of Sfx system
+    laser = audio_sfx_load(laser_shoot, LASER_SHOOT_LEN, 1.0f, LASER_SHOOT_RATE, SFX_PCM16, 4);
 
     if (log_init() == false) {
         Error_Handler();

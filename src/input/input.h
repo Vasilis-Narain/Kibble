@@ -1,3 +1,9 @@
+/*
+ * SPDX-FileCopyrightText: 2026 Vasilis Narain
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
 #ifndef __INPUT_H
 #define __INPUT_H
 
@@ -59,9 +65,6 @@ void input_joystick_init(void);
 void input_poll(void);
 void input_adc_register_centres(uint16_t x, uint16_t y);
 void input_calculate_centres(bool recalibrate);
-
-// tmp function for testing
-uint16_t input_state_adc_raw(uint32_t axis);
 
 // Raylib style userland api
 bool input_is_key_down(BtnInputFlagBit btn);

@@ -273,4 +273,11 @@ KEEP (*(.RAM_NOCACHE))
 . = ALIGN(4);
 } >RAM_NOCACHE
 
+.AXI_BSS (NOLOAD) :
+{. = ALIGN(4);
+*(.AXI_BSS)
+*(.AXI_BSS*)
+. = ALIGN(4);
+} >RAM
+
 /*end of MX sections*/}

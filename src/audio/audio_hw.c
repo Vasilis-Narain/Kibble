@@ -1,6 +1,13 @@
-#include "audio.h"
+/*
+ * SPDX-FileCopyrightText: 2026 Vasilis Narain
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
+#include "audio_internal.h"
 #include <string.h>
 
+#include "mem_sections.h"
 #include "FreeRTOS.h" // IWYU pragma: keep
 #include "task.h"
 #include "main.h"
@@ -9,9 +16,7 @@
 static SAI_HandleTypeDef *const audio_handle = &hsai_BlockA1;
 static TaskHandle_t audio_task_handle;
 
-#define AUDIO_HALF_FRAMES 256u
-#define AUDIO_HALF_SAMPLES (AUDIO_HALF_FRAMES * 2u)
-__attribute__((section(".RAM_NOCACHE"), aligned(32))) static int16_t audio_buf[AUDIO_HALF_SAMPLES * 2u];
+DMA_NOCACHE static int16_t audio_buf[AUDIO_HALF_SAMPLES * 2u];
 
 static void audio_task(void *arg) {
     (void)arg;
@@ -31,21 +36,8 @@ static void audio_task(void *arg) {
         uint32_t half;
         xTaskNotifyWait(0, 0, &half, portMAX_DELAY);
 
-        // TODO(vasilis): mixing logic
-        // tmp fill with square wave
-        static uint32_t phase = 0;
-        static int16_t level = 8000;
-
         int16_t *out = &audio_buf[half * AUDIO_HALF_SAMPLES];
-
-        for (uint32_t i = 0; i < AUDIO_HALF_FRAMES; ++i) {
-            out[2 * i] = level;
-            out[2 * i + 1] = level;
-            if (++phase == 55) {
-                phase = 0;
-                level = -level;
-            }
-        }
+        audio_mix(out);
     }
 
     vTaskDelete(NULL);

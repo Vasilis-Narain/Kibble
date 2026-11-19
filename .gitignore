@@ -3,6 +3,7 @@ build/
 
 # Other
 datasheets/
+audio_samples/*.wav
 
 # KiCad
 .history/

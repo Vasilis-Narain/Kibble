@@ -1,0 +1,26 @@
+version = 1
+
+# Own project files without an SPDX header
+[[annotations]]
+path = ["*.md", "CMakeLists.txt", "CMakePresets.json", "Dockerfile", ".dockerignore",
+        ".gitignore", "**/.clangd", "**/.clang-format", ".github/**", "tests/CMakeLists.txt",
+        "schematics/**", "cubemx/cubemx_project.ioc", "cubemx/.mxproject"]
+SPDX-FileCopyrightText = "2026 Vasilis Narain"
+SPDX-License-Identifier = "MIT"
+
+# ST: HAL, BSP, CubeMX-generated code, startup, linker scripts, toolchain files.
+# Core/ and cmake/ also contain my own changes (USER CODE sections, modified copies).
+# Generated Core/ and BSP files only say "AS-IS" without a LICENSE file;
+# BSD-3-Clause follows ST's HAL license for these.
+[[annotations]]
+path = ["cubemx/Core/**", "cubemx/Drivers/STM32H7xx_HAL_Driver/**", "cubemx/Drivers/BSP/**",
+        "cubemx/*.s", "cubemx/*.ld", "cubemx/CMakeLists.txt", "cubemx/CMakePresets.json",
+        "cubemx/cmake/**", "cmake/**"]
+SPDX-FileCopyrightText = ["STMicroelectronics", "2026 Vasilis Narain"]
+SPDX-License-Identifier = "BSD-3-Clause"
+
+# CMSIS: Arm core headers + ST device headers
+[[annotations]]
+path = ["cubemx/Drivers/CMSIS/**"]
+SPDX-FileCopyrightText = ["Arm Limited", "STMicroelectronics"]
+SPDX-License-Identifier = "Apache-2.0"
