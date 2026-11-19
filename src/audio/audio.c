@@ -17,7 +17,7 @@ void audio_set_master_volume(float volume) {
     if (volume < 0) {
         volume = 0;
     }
-    master_volume = (int32_t)(AUDIO_MASTER_MAX_GAIN * volume);
+    master_volume = (int32_t)(AUDIO_MASTER_MAX_GAIN * volume + 0.5f);
 }
 
 // Adds the loaded `sfx` to the voices that need to get mixed and returns VoiceHandle.

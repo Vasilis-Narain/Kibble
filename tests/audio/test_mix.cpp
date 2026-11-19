@@ -24,6 +24,10 @@ TEST_GROUP(audio_mix_test_group){
 }; 
 
 TEST(audio_mix_test_group, valid_mix_sequence) {
+    // test is written assuming a gain ceiling of 32..
+    float volume = 32.0f / AUDIO_MASTER_MAX_GAIN;
+    audio_set_master_volume(volume);
+
     int16_t out[AUDIO_HALF_SAMPLES];
     static const int16_t expected[] = {12, 4039, -4059, 2254};
 
