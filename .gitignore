@@ -4,7 +4,7 @@ build/
 # Other
 datasheets/
 audio_samples/*.wav
-audio_wav_parser
+audio_samples/audio_wav_parser
 *.ilk
 *.pdb
 
