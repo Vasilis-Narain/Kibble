@@ -4,6 +4,9 @@ build/
 # Other
 datasheets/
 audio_samples/*.wav
+audio_samples/audio_wav_parser
+*.ilk
+*.pdb
 
 # KiCad
 .history/
