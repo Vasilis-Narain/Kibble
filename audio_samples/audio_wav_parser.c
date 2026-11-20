@@ -156,11 +156,14 @@ static bool generate_header_file(const char *file_name, uint32_t file_name_len, 
         printf("\r\ngenerate_header_file: failed to open write file\r\n");
         return false;
     }
+
+    /* REUSE-IgnoreStart */
     fprintf(write_stream, "/*\n");
     fprintf(write_stream, " * SPDX-FileCopyrightText: 2026 Vasilis Narain\n");
     fprintf(write_stream, " *\n");
     fprintf(write_stream, " * SPDX-License-Identifier: MIT\n");
     fprintf(write_stream, " */\n");
+    /* REUSE-IgnoreEnd */
 
     fprintf(write_stream, "\n/* This file was automatically generated from %s */\n", file_name);
     fprintf(write_stream, "\n#ifndef %sH\n", header_def);
