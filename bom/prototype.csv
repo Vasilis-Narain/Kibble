@@ -1,0 +1,17 @@
+Item,Part,Link,Qty,Notes
+Dev board,ST NUCLEO-H7A3ZI-Q,https://www.digikey.it/en/products/detail/stmicroelectronics/NUCLEO-H7A3ZI-Q/11482046,1,"Same MCU as final, onboard ST-LINK"
+Display,NHD-2.8-240320AF-CSXP-F,https://www.digikey.it/en/products/detail/newhaven-display-intl/NHD-2-8-240320AF-CSXP-F/9849907,1,"Same panel as final, 8-bit 8080 on prototype"
+FFC breakout,NHD-FFC40,https://www.digikey.it/en/products/detail/newhaven-display-intl/NHD-FFC40/2165899,1,40-pin FFC to 2x20 2.54mm
+Backlight transistor,onsemi PN2222ABU,https://www.digikey.it/en/products/detail/onsemi/PN2222ABU/6534,2,1 used + 1 spare
+Backlight resistor,Stackpole CF14JT33R0 (33 ohm 1/4W),https://www.digikey.it/en/products/detail/stackpole-electronics-inc/CF14JT33R0/1741397,2,1 used + 1 spare
+Transistor base resistor,Stackpole CF14JT1K00 (1k 1/4W),https://www.digikey.it/en/products/detail/stackpole-electronics-inc/CF14JT1K00/1741314,2,1 used + 1 spare
+Audio amp,Adafruit 3006 (MAX98357A breakout),https://www.digikey.it/en/products/detail/adafruit-industries-llc/3006/6058477,1,
+Speaker,Adafruit 3351 (4 ohm 3W),https://www.digikey.it/en/products/detail/adafruit-industries-llc/3351/6612456,1,Final uses 8 ohm 1W
+microSD breakout,"Adafruit 4682 (SPI/SDIO, 3V)",https://www.digikey.it/en/products/detail/adafruit-industries-llc/4682/12822319,1,Must expose all SDIO pins
+microSD card,"4-32GB, FAT32",,1,
+Joystick,Adafruit 512 (thumb joystick + breakout),https://www.digikey.it/en/products/detail/512/1528-2124-ND/7056915,1,"Potentiometer type, final is hall effect"
+Tactile buttons,"Adafruit 1119 (12mm, 10 pack)",https://www.digikey.it/en/products/detail/adafruit-industries-llc/1119/7241449,2,Packs
+Power LED + resistor,Green 5mm LED + 330 ohm,,1,
+Breadboards,830 points,,3,
+Jumper wires,Male-male + male-female set,,1,Female-male needed for the 2x20 header
+Logic analyzer,"8ch 24MHz, PulseView compatible",,1,"Tool, not part of the build"

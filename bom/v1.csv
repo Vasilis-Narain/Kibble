@@ -1,0 +1,29 @@
+Designator,Group,Item,Part,LCSC,Qty,Status,Notes
+,MCU,MCU,STM32H7A3ZIT6Q (LQFP144),C730224,1,Chosen,Check -Q variant and stock
+,MCU,HSE crystal,8MHz + load caps,,1,TBD,Load caps per crystal datasheet
+,MCU,SMPS inductor + caps,Per DS13195 reference design,,1 set,Per datasheet,Optional - chip runs from LDO without them
+,MCU,Decoupling + VCAP caps,Per DS13195 reference design,,1 set,Per datasheet,
+,Display,Display,NHD-2.8-240320AF-CSXP-F,,1,Chosen,16-bit 8080-II; https://www.digikey.it/en/products/detail/newhaven-display-intl/NHD-2-8-240320AF-CSXP-F/9849907
+,Display,FFC socket,"Molex 54132-4062 (40-pin 0.5mm, bottom contact)",C505102,1,Chosen,JLCPCB-assembled
+,Display,Backlight driver,PWM-dimmable constant current driver,,1,TBD,3.3V rail too low for 3.1V LEDs
+,Audio,DAC/amp,MAX98357AETE+T,,1,Chosen,"I2S, shutdown pin to GPIO"
+,Audio,Speaker,8 ohm 1W,,1,TBD,
+,Storage,microSD socket,Hirose DM3AT-SF-PEJM5,,1,Chosen,With card detect
+,Storage,SD pull-ups,47k,,5,Chosen,"CMD, DAT0-DAT3"
+,Controls,Face + D-pad pads,Conductive rubber pads,,8,TBD,Over ENIG PCB pads
+,Controls,Shoulder + menu buttons,Tactile switch,,4,TBD,2 shoulder + 2 menu
+,Controls,Joystick,"Hall effect, 2 axis",,1,TBD,
+,Power,Battery,"1S LiPo 1500mAh, protection, JST-PH 2.0",,1,TBD,Size after current budget
+,Power,Battery connector,JST-PH 2.0 2-pin,,1,TBD,
+,Power,Charger,TI BQ24072RGTR,,1,Chosen,Power-path; passives per datasheet
+,Power,USB-C receptacle,GCT USB4105-GF-A,,1,Chosen,
+,Power,CC pull-downs,5.1k,,2,Chosen,"CC1, CC2"
+,Power,3.3V buck-boost,TI TPS63020DSJR,,1,Chosen,Inductor + caps per datasheet
+,Power,Battery divider,Resistor,,2,TBD,Values TBD
+,Power,Power button,Tactile switch,,1,TBD,
+,Power,Power LED + resistor,Green LED,,1,TBD,Part + resistor value TBD
+,Debug,SWD header,2x5 1.27mm,,1,TBD,
+,Debug,UART header,Pin header,,1,TBD,Not PD8/PD9
+,Debug,Reset button,Tactile switch,,1,TBD,
+,Debug,BOOT0 button,Tactile switch,,1,TBD,
+,PCB,PCB,"4 layer, ENIG",,1,Chosen,JLCPCB-assembled

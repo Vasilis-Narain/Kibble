@@ -4,7 +4,7 @@ version = 1
 [[annotations]]
 path = ["*.md", "CMakeLists.txt", "CMakePresets.json", "Dockerfile", ".dockerignore",
         ".gitignore", "**/.clangd", "**/.clang-format", ".github/**", "tests/CMakeLists.txt",
-        "schematics/**", "cubemx/cubemx_project.ioc", "cubemx/.mxproject"]
+        "schematics/**", "bom/**", "cubemx/cubemx_project.ioc", "cubemx/.mxproject"]
 SPDX-FileCopyrightText = "2026 Vasilis Narain"
 SPDX-License-Identifier = "MIT"
 
