@@ -3,4 +3,4 @@
 # SPDX-License-Identifier: MIT
 
 #!/bin/sh
-MSYS_NO_PATHCONV=1 docker run --rm -v "$(pwd -W):/project" handheld-env sh -c "cmake --preset host-tests && cmake --build --preset host-tests --clean-first && ctest --preset host-tests"
+docker run --rm -v "$PWD:/project" kibble-env cmake --workflow --preset host-tests
