@@ -1,3 +1,6 @@
+> [!WARNING]
+> This project is a work in process, everything about it may change without warning! Use at your own risk
+
 ## Goal of the project
 The aim of this project is to make a simple handheld device (with controls similar to a GameBoy advance).
 It should run games that a user can easily copy into an sd card.
