@@ -9,7 +9,10 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 project(handheld C)
 
 # FatFS: builds on both builds (test / debug/release)
-add_library(fatfs STATIC FatFs/ff.c)
+add_library(fatfs STATIC 
+    FatFs/ff.c
+    FatFs/ffunicode.c
+)
 target_include_directories(fatfs SYSTEM PUBLIC FatFs)
 #
 

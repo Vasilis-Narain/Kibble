@@ -6,8 +6,14 @@
 
 #include "app.h"
 
+// freertos
 #include "FreeRTOS.h" // IWYU pragma: keep
+#include "mem_sections.h"
 #include "task.h"
+
+// Fat fs
+#include <ff.h>
+
 #include "main.h"
 #include "input.h"
 #include "audio.h"
@@ -16,6 +22,57 @@
 //NOTE(vasilis): tmp for on-device testing of Sfx system
 #include "laser_shoot.h"
 static Sfx laser;
+
+//NOTE(vasilis): testing sd bring up
+//////////////////////////////////////
+DMA_NOCACHE FATFS SDFatFs; // filesystem object
+DMA_NOCACHE FIL test_file; // file object
+DMA_NOCACHE uint8_t read_buffer[64];
+
+void test_sd_card(void) {
+    FRESULT res;
+    uint32_t bytes_read;
+    uint32_t bytes_written;
+    uint8_t write_text[] = "[STM32H743_Eval]:This is STM32 working with FatFs + DMA";
+
+    // initial mount
+    res = f_mount(&SDFatFs, "", 1);
+    if (res != FR_OK) {
+        Error_Handler();
+    }
+    // open + write
+    res = f_open(&test_file, "test.txt", FA_CREATE_ALWAYS | FA_WRITE);
+    if (res != FR_OK) {
+        Error_Handler();
+    }
+    res = f_write(&test_file, write_text, sizeof(write_text), (void *)&bytes_written);
+    if ((bytes_written > 0) && (res == FR_OK)) {
+        f_close(&test_file);
+    }
+
+    // unmount then mount to ensure we read from sd
+    f_unmount("");
+    res = f_mount(&SDFatFs, "", 1);
+    if (res != FR_OK) {
+        Error_Handler();
+    }
+
+    // then open + read
+    res = f_open(&test_file, "test.txt", FA_READ);
+    if (res != FR_OK) {
+        Error_Handler();
+    }
+    res = f_read(&test_file, read_buffer, sizeof(read_buffer), (void *)&bytes_read);
+    if ((bytes_read > 0) && (res == FR_OK)) {
+        f_close(&test_file);
+        if (bytes_read == bytes_written) {
+            return;
+        }
+    }
+    return;
+}
+
+//////////////////////////////////////
 
 void vApplicationMallocFailedHook(void) {
     configASSERT(0);
@@ -75,6 +132,9 @@ void app_main(void) {
     if (log_init() == false) {
         Error_Handler();
     }
+
+    test_sd_card();
+    printf("SD Readback: \n%s\n", (char *)read_buffer);
 
     if (xTaskCreate(frame_loop, "frame_loop", 512, NULL, 2, NULL) != pdPASS) {
         // NOTE(vasilis): fail here means insufficient heap memory for task
