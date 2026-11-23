@@ -24,3 +24,9 @@ SPDX-License-Identifier = "BSD-3-Clause"
 path = ["cubemx/Drivers/CMSIS/**"]
 SPDX-FileCopyrightText = ["Arm Limited", "STMicroelectronics"]
 SPDX-License-Identifier = "Apache-2.0"
+
+# FatFS
+[[annotations]]
+path = ["FatFs/**"]
+SPDX-FileCopyrightText = "(C)ChaN, 2025"
+SPDX-License-Identifier  = "LicenseRef-FatFs"
