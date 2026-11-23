@@ -87,6 +87,7 @@ DRESULT disk_read(
     (void)pdrv;
     DRESULT res = RES_ERROR;
     uint32_t timeout;
+    read_status = 0;
 
     if (HAL_SD_ReadBlocks_DMA(sd_handle, (uint8_t *)buff, (uint32_t)sector, count) == HAL_OK) {
         // Wait for reading process to complete (or timeout)
@@ -96,12 +97,13 @@ DRESULT disk_read(
 
         if (read_status == 0) { //means loop failed for timeout
             res = RES_ERROR;
+            HAL_SD_Abort(sd_handle);
         } else {
             read_status = 0;
             timeout = HAL_GetTick();
 
             while ((HAL_GetTick() - timeout) < SD_TIMEOUT) {
-                if (HAL_SD_GetCardState(sd_handle) == HAL_SD_STATE_READY) {
+                if (HAL_SD_GetCardState(sd_handle) == HAL_SD_CARD_READY) {
                     res = RES_OK;
                     //NOTE(vasilis): here is where we would invalidate the cache
                     break;
@@ -138,12 +140,13 @@ DRESULT disk_write(
 
         if (write_status == 0) {
             res = RES_ERROR;
+            HAL_SD_Abort(sd_handle);
         } else {
             write_status = 0;
             timeout = HAL_GetTick();
 
             while ((HAL_GetTick() - timeout) < SD_TIMEOUT) {
-                if (HAL_SD_GetCardState(sd_handle) == HAL_SD_STATE_READY) {
+                if (HAL_SD_GetCardState(sd_handle) == HAL_SD_CARD_READY) {
                     res = RES_OK;
                     break;
                 }

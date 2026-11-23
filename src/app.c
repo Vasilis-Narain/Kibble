@@ -38,12 +38,12 @@ void test_sd_card(void) {
     // initial mount
     res = f_mount(&SDFatFs, "", 1);
     if (res != FR_OK) {
-        Error_Handler();
+        log_printf("failed initial mount\r\n");
     }
     // open + write
     res = f_open(&test_file, "test.txt", FA_CREATE_ALWAYS | FA_WRITE);
     if (res != FR_OK) {
-        Error_Handler();
+        log_printf("failed initial open\r\n");
     }
     res = f_write(&test_file, write_text, sizeof(write_text), (void *)&bytes_written);
     if ((bytes_written > 0) && (res == FR_OK)) {
@@ -54,13 +54,13 @@ void test_sd_card(void) {
     f_unmount("");
     res = f_mount(&SDFatFs, "", 1);
     if (res != FR_OK) {
-        Error_Handler();
+        log_printf("failed second mount\r\n");
     }
 
     // then open + read
     res = f_open(&test_file, "test.txt", FA_READ);
     if (res != FR_OK) {
-        Error_Handler();
+        log_printf("failed second open\r\n");
     }
     res = f_read(&test_file, read_buffer, sizeof(read_buffer), (void *)&bytes_read);
     if ((bytes_read > 0) && (res == FR_OK)) {
@@ -88,6 +88,9 @@ void vApplicationStackOverflowHook(TaskHandle_t t, char *n) {
 //targetting 60fps
 static void frame_loop(void *pvParameters) {
     (void)pvParameters;
+
+    test_sd_card();
+    log_printf("SD Readback: \n%s\n", (char *)read_buffer);
 
     TickType_t last_wake_time = xTaskGetTickCount();
     static uint32_t frame = 0;
@@ -132,9 +135,6 @@ void app_main(void) {
     if (log_init() == false) {
         Error_Handler();
     }
-
-    test_sd_card();
-    printf("SD Readback: \n%s\n", (char *)read_buffer);
 
     if (xTaskCreate(frame_loop, "frame_loop", 512, NULL, 2, NULL) != pdPASS) {
         // NOTE(vasilis): fail here means insufficient heap memory for task
