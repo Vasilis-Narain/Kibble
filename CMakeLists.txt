@@ -75,6 +75,7 @@ if(CMAKE_CROSSCOMPILING)
         src/input
         src/audio
         src/log
+        src/sd_fs
     )
 
     target_link_libraries(handheld

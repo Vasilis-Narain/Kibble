@@ -8,29 +8,50 @@
 #include "diskio.h" /* Declarations FatFs MAI */
 
 /* Example: Declarations of the platform and disk functions in the project */
+#include "main.h"
 #include "sdmmc.h"
 #include "stm32h7xx_hal.h"
 #include "stm32h7xx_hal_gpio.h"
 #include "stm32h7xx_hal_sd.h"
 
-#define SD_TIMEOUT 30 * 1000
+#include "sd.h"
+
+#define SD_TIMEOUT 1000 // 1 second timeout
 #define SD_DEFAULT_BLOCK_SIZE 512
+#define SD_DEBOUNCE_MS 10
 
 SD_HandleTypeDef *sd_handle = &hsd1;
 
 static volatile DSTATUS stat = STA_NOINIT;
 static volatile UINT write_status = 0;
 static volatile UINT read_status = 0;
+static GPIO_PinState sd_candidate = GPIO_PIN_RESET;
+static GPIO_PinState sd_stable = GPIO_PIN_RESET;
+static uint32_t sd_changed_at = 0;
 
 /*-----------------------------------------------------------------------*/
 /* Get Drive Status                                                      */
 /*-----------------------------------------------------------------------*/
+static GPIO_PinState sd_detect_stable(void) {
+    GPIO_PinState raw_sd = HAL_GPIO_ReadPin(SD_DET_GPIO_Port, SD_DET_Pin);
+    uint32_t now = HAL_GetTick();
+
+    if (raw_sd != sd_candidate) {
+        sd_candidate = raw_sd;
+        sd_changed_at = now;
+    }
+
+    if ((uint32_t)(now - sd_changed_at) >= SD_DEBOUNCE_MS) {
+        sd_stable = sd_candidate;
+    }
+    return sd_stable;
+}
 
 static DSTATUS sd_check_card_state(BYTE pdrv) {
     (void)pdrv;
     stat = STA_NOINIT;
 
-    if (HAL_SD_GetCardState(sd_handle) == HAL_SD_STATE_READY) {
+    if (sd_detect_stable() != GPIO_PIN_RESET) {
         stat &= ~STA_NOINIT;
     }
 
@@ -52,9 +73,11 @@ DSTATUS disk_initialize(
 ) {
     (void)pdrv;
     // Early return if sd_det is held low (meaning sd is not present)
-    GPIO_PinState sd_det_state = HAL_GPIO_ReadPin(SD_DET_GPIO_Port, SD_DET_Pin);
-    if (sd_det_state == GPIO_PIN_RESET) {
+    GPIO_PinState raw_sd = HAL_GPIO_ReadPin(SD_DET_GPIO_Port, SD_DET_Pin);
+    if (raw_sd == GPIO_PIN_RESET) {
         stat = STA_NODISK | STA_NOINIT;
+        sd_candidate = raw_sd;
+        sd_stable = raw_sd;
         return stat;
     }
 
@@ -62,12 +85,16 @@ DSTATUS disk_initialize(
     sd_handle->Instance = SDMMC1;
     sd_handle->Init.ClockEdge = SDMMC_CLOCK_EDGE_RISING;
     sd_handle->Init.ClockPowerSave = SDMMC_CLOCK_POWER_SAVE_DISABLE;
-    sd_handle->Init.BusWide = SDMMC_BUS_WIDE_4B;
+    sd_handle->Init.BusWide = SDMMC_BUS_WIDE_1B;
     sd_handle->Init.HardwareFlowControl = SDMMC_HARDWARE_FLOW_CONTROL_ENABLE;
+
+    //NOTE(vasilis): Clock input (pre div) is 140 MHZ
     sd_handle->Init.ClockDiv = 14;
     if (HAL_SD_Init(sd_handle) != HAL_OK) {
         stat = STA_NOINIT;
     } else {
+        sd_candidate = raw_sd;
+        sd_stable = raw_sd;
         stat = 0;
     }
 
@@ -103,7 +130,7 @@ DRESULT disk_read(
             timeout = HAL_GetTick();
 
             while ((HAL_GetTick() - timeout) < SD_TIMEOUT) {
-                if (HAL_SD_GetCardState(sd_handle) == HAL_SD_CARD_READY) {
+                if (HAL_SD_GetCardState(sd_handle) == HAL_SD_CARD_TRANSFER) {
                     res = RES_OK;
                     //NOTE(vasilis): here is where we would invalidate the cache
                     break;
@@ -146,7 +173,7 @@ DRESULT disk_write(
             timeout = HAL_GetTick();
 
             while ((HAL_GetTick() - timeout) < SD_TIMEOUT) {
-                if (HAL_SD_GetCardState(sd_handle) == HAL_SD_CARD_READY) {
+                if (HAL_SD_GetCardState(sd_handle) == HAL_SD_CARD_TRANSFER) {
                     res = RES_OK;
                     break;
                 }
@@ -222,3 +249,7 @@ void HAL_SD_TxCpltCallback(SD_HandleTypeDef *hsd) {
     (void)hsd;
     write_status = 1;
 }
+
+// SD det irq
+// NOTE(vasilis): tbd if we'll use this
+void sd_det_irq_callback(void) {}

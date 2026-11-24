@@ -9,6 +9,8 @@
 // freertos
 #include "FreeRTOS.h" // IWYU pragma: keep
 #include "mem_sections.h"
+#include "sdmmc.h"
+#include "stm32h7xx_hal_gpio.h"
 #include "task.h"
 
 // Fat fs
@@ -18,6 +20,7 @@
 #include "input.h"
 #include "audio.h"
 #include "log.h"
+#include "sd.h"
 
 //NOTE(vasilis): tmp for on-device testing of Sfx system
 #include "laser_shoot.h"
@@ -33,17 +36,17 @@ void test_sd_card(void) {
     FRESULT res;
     uint32_t bytes_read;
     uint32_t bytes_written;
-    uint8_t write_text[] = "[STM32H743_Eval]:This is STM32 working with FatFs + DMA";
+    uint8_t write_text[] = "[STM32H743_Eval]: SD Init OK";
 
     // initial mount
     res = f_mount(&SDFatFs, "", 1);
     if (res != FR_OK) {
-        log_printf("failed initial mount\r\n");
+        log_printf("failed initial mount: res = %d, hsd1.e = %d\r\n", res, hsd1.ErrorCode);
     }
     // open + write
     res = f_open(&test_file, "test.txt", FA_CREATE_ALWAYS | FA_WRITE);
     if (res != FR_OK) {
-        log_printf("failed initial open\r\n");
+        log_printf("failed initial open: res = %d, hsd1.e = %d\r\n", res, hsd1.ErrorCode);
     }
     res = f_write(&test_file, write_text, sizeof(write_text), (void *)&bytes_written);
     if ((bytes_written > 0) && (res == FR_OK)) {
@@ -54,13 +57,13 @@ void test_sd_card(void) {
     f_unmount("");
     res = f_mount(&SDFatFs, "", 1);
     if (res != FR_OK) {
-        log_printf("failed second mount\r\n");
+        log_printf("failed second mount: res = %d, hsd1.e = %d\r\n", res, hsd1.ErrorCode);
     }
 
     // then open + read
     res = f_open(&test_file, "test.txt", FA_READ);
     if (res != FR_OK) {
-        log_printf("failed second open\r\n");
+        log_printf("failed second open: res = %d, hsd1.e = %d\r\n", res, hsd1.ErrorCode);
     }
     res = f_read(&test_file, read_buffer, sizeof(read_buffer), (void *)&bytes_read);
     if ((bytes_read > 0) && (res == FR_OK)) {
@@ -74,14 +77,25 @@ void test_sd_card(void) {
 
 //////////////////////////////////////
 
+// freeRTOS hooks
 void vApplicationMallocFailedHook(void) {
     configASSERT(0);
 }
-
 void vApplicationStackOverflowHook(TaskHandle_t t, char *n) {
     (void)t;
     (void)n;
     configASSERT(0);
+}
+
+// GPIO IRQ dispatcher
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
+    switch (GPIO_Pin) {
+    case SD_DET_Pin:
+        sd_det_irq_callback();
+        break;
+    default: // not implemented pins
+        break;
+    }
 }
 
 //NOTE(vasilis): eventually the TE pin from the display will drive frame update
@@ -90,7 +104,7 @@ static void frame_loop(void *pvParameters) {
     (void)pvParameters;
 
     test_sd_card();
-    log_printf("SD Readback: \n%s\n", (char *)read_buffer);
+    log_printf("SD Readback: %s\r\n", (char *)read_buffer);
 
     TickType_t last_wake_time = xTaskGetTickCount();
     static uint32_t frame = 0;
