@@ -37,6 +37,7 @@
 //private variables:
 static DMA_NOCACHE uint8_t scratch_buffer[SD_DEFAULT_BLOCK_SIZE];
 static SD_HandleTypeDef *const sd_handle = &hsd1;
+
 // status variables:
 static volatile DSTATUS stat = STA_NOINIT;
 static volatile UINT write_status = 0;
