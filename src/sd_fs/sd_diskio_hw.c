@@ -19,6 +19,15 @@
 #define SD_TIMEOUT 1000 // 1 second timeout
 #define SD_DEFAULT_BLOCK_SIZE 512
 #define SD_DEBOUNCE_MS 10
+#define SD_TRANSFER_BUS_WIDTH 1
+
+#if defined(SD_TRANSFER_BUS_WIDTH) && (SD_TRANSFER_BUS_WIDTH == 1)
+#define SD_TRANSFER_MODE_INTERNAL SDMMC_BUS_WIDE_1B
+#elif defined(SD_TRANSFER_BUS_WIDTH) && (SD_TRANSFER_BUS_WIDTH == 4)
+#define SD_TRANSFER_MODE_INTERNAL SDMMC_BUS_WIDE_4B
+#else
+#error "SD Bus width must be 1 or 4 bits wide!"
+#endif
 
 //private variables:
 static SD_HandleTypeDef *const sd_handle = &hsd1;
@@ -87,7 +96,7 @@ DSTATUS disk_initialize(
     sd_handle->Instance = SDMMC1;
     sd_handle->Init.ClockEdge = SDMMC_CLOCK_EDGE_RISING;
     sd_handle->Init.ClockPowerSave = SDMMC_CLOCK_POWER_SAVE_DISABLE;
-    sd_handle->Init.BusWide = SDMMC_BUS_WIDE_1B;
+    sd_handle->Init.BusWide = SD_TRANSFER_MODE_INTERNAL;
     sd_handle->Init.HardwareFlowControl = SDMMC_HARDWARE_FLOW_CONTROL_ENABLE;
 
     //NOTE(vasilis): Clock input (pre div) is 140 MHZ
