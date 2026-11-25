@@ -7,6 +7,9 @@
 /* This file contains glue function implementations used by FatFS */
 #include "sd.h"
 
+#include <stdint.h>
+#include <string.h>
+
 #include "ff.h"     /* Basic definitions of FatFs */
 #include "diskio.h" /* Declarations FatFs MAI */
 
@@ -18,7 +21,7 @@
 #include "mem_sections.h"
 
 #define SD_TIMEOUT 1000 // 1 second timeout
-#define SD_DEFAULT_BLOCK_SIZE 512
+#define SD_DEFAULT_BLOCK_SIZE FF_MAX_SS
 #define SD_DEBOUNCE_MS 10
 #define SD_TRANSFER_BUS_WIDTH 1
 
@@ -31,6 +34,7 @@
 #endif
 
 //private variables:
+static DMA_NOCACHE uint8_t scratch_buffer[SD_DEFAULT_BLOCK_SIZE];
 static SD_HandleTypeDef *const sd_handle = &hsd1;
 // status variables:
 static volatile DSTATUS stat = STA_NOINIT;
@@ -128,20 +132,11 @@ static inline uint32_t sd_transfer_cplt_status_poll(volatile UINT *status_ptr, u
 /* Read Sector(s)                                                        */
 /*-----------------------------------------------------------------------*/
 
-DRESULT disk_read(
-    BYTE pdrv,    /* Physical drive nmuber to identify the drive */
-    BYTE *buff,   /* Data buffer to store read data */
-    LBA_t sector, /* Start sector in LBA */
-    UINT count    /* Number of sectors to read */
-) {
-    (void)pdrv;
+static DRESULT sd_read_blocks_dma(bool needs_invalidate, uint8_t *buff, uint32_t sector, uint32_t count) {
     DRESULT res = RES_ERROR;
-    uint32_t timeout;
-    read_status = 0;
-
     if (HAL_SD_ReadBlocks_DMA(sd_handle, (uint8_t *)buff, (uint32_t)sector, count) == HAL_OK) {
         // Wait for reading process to complete (or timeout)
-        timeout = HAL_GetTick();
+        uint32_t timeout = HAL_GetTick();
         uint32_t err = sd_transfer_cplt_status_poll(&read_status, timeout);
 
         if (err != HAL_SD_ERROR_NONE) { //means loop failed for timeout or sd err
@@ -155,13 +150,51 @@ DRESULT disk_read(
             while ((HAL_GetTick() - timeout) < SD_TIMEOUT) {
                 if (HAL_SD_GetCardState(sd_handle) == HAL_SD_CARD_TRANSFER) {
                     res = RES_OK;
-                    //NOTE(vasilis): here is where we would invalidate the cache
+
+                    if (needs_invalidate) {
+                        SCB_InvalidateDCache_by_Addr((uint32_t *)buff, count * SD_DEFAULT_BLOCK_SIZE);
+                    }
                     break;
                 }
             }
         }
     }
+    return res;
+}
 
+DRESULT disk_read(
+    BYTE pdrv,    /* Physical drive nmuber to identify the drive */
+    BYTE *buff,   /* Data buffer to store read data */
+    LBA_t sector, /* Start sector in LBA */
+    UINT count    /* Number of sectors to read */
+) {
+    (void)pdrv;
+    DRESULT res = RES_ERROR;
+    read_status = 0;
+    uint32_t byte_count = count * SD_DEFAULT_BLOCK_SIZE;
+
+    if (mem_buff_is_nocache(buff, byte_count)) {
+        //NOTE(vasilis): buff is not cacheable
+        res = sd_read_blocks_dma(false, (uint8_t *)buff, (uint32_t)sector, count);
+    } else {
+        if (mem_buff_is_axi_cached(buff, byte_count) && (((uint32_t)buff & 0x1F) == 0)) {
+            //NOTE(vasilis): buff is cacheable and 32-byte aligned
+            //This means DMA can write direct to buffer but we need to manage cache
+            //clean -> dma -> invalidate (this step happens in the function)
+            SCB_CleanDCache_by_Addr((uint32_t *)buff, count * SD_DEFAULT_BLOCK_SIZE);
+            res = sd_read_blocks_dma(true, (uint8_t *)buff, (uint32_t)sector, count);
+        } else {
+            //NOTE(vasilis): anything else (unaligned & cachable || DTCM(cant be reached by idma))
+            //here we must loop over each block
+            for (uint32_t i = 0; i < count; ++i) {
+                res = sd_read_blocks_dma(false, scratch_buffer, sector + i, 1);
+                if (res != RES_OK) {
+                    return res;
+                }
+                memcpy((uint8_t *)buff + i * SD_DEFAULT_BLOCK_SIZE, scratch_buffer, SD_DEFAULT_BLOCK_SIZE);
+            }
+        }
+    }
     return res;
 }
 
@@ -171,20 +204,15 @@ DRESULT disk_read(
 
 #if FF_FS_READONLY == 0
 
-DRESULT disk_write(
-    BYTE pdrv,        /* Physical drive nmuber to identify the drive */
-    const BYTE *buff, /* Data to be written */
-    LBA_t sector,     /* Start sector in LBA */
-    UINT count        /* Number of sectors to write */
-) {
-    (void)pdrv;
+static DRESULT sd_write_blocks_dma(bool needs_cache_clean, uint8_t *buff, uint32_t sector, uint32_t count) {
     DRESULT res = RES_ERROR;
-    write_status = 0;
-    uint32_t timeout;
-
+    if (needs_cache_clean) {
+        // NOTE(vasilis): here we clean (aka flush) the cache making sure whatever is in buff is actually in RAM and not in the cache lines
+        SCB_CleanDCache_by_Addr((uint32_t *)buff, count * SD_DEFAULT_BLOCK_SIZE);
+    }
     if (HAL_SD_WriteBlocks_DMA(sd_handle, (uint8_t *)buff, (uint32_t)sector, count) == HAL_OK) {
         //wait for writing to complete (or timeout)
-        timeout = HAL_GetTick();
+        uint32_t timeout = HAL_GetTick();
         uint32_t err = sd_transfer_cplt_status_poll(&write_status, timeout);
 
         if (err != HAL_SD_ERROR_NONE) { //means loop failed for timeout or sd err
@@ -199,6 +227,36 @@ DRESULT disk_write(
                 if (HAL_SD_GetCardState(sd_handle) == HAL_SD_CARD_TRANSFER) {
                     res = RES_OK;
                     break;
+                }
+            }
+        }
+    }
+    return res;
+}
+
+DRESULT disk_write(
+    BYTE pdrv,        /* Physical drive nmuber to identify the drive */
+    const BYTE *buff, /* Data to be written */
+    LBA_t sector,     /* Start sector in LBA */
+    UINT count        /* Number of sectors to write */
+) {
+    (void)pdrv;
+    DRESULT res = RES_ERROR;
+    write_status = 0;
+    uint32_t byte_count = count * SD_DEFAULT_BLOCK_SIZE;
+
+    if (mem_buff_is_nocache(buff, byte_count)) { // in dma nocache
+        res = sd_write_blocks_dma(false, (uint8_t *)buff, (uint32_t)sector, count);
+    } else {
+        if (mem_buff_is_axi_cached(buff, byte_count) && (((uint32_t)buff & 0x3) == 0)) { // cacheable + aligned (here 4-byte aligned is fine)
+            res = sd_write_blocks_dma(true, (uint8_t *)buff, (uint32_t)sector, count);
+        } else { // cacheable + unaligned || DTCM (non idma reachable)
+            // memcpy into scratch -> dma
+            for (uint32_t i = 0; i < count; ++i) {
+                memcpy(scratch_buffer, buff + i * SD_DEFAULT_BLOCK_SIZE, SD_DEFAULT_BLOCK_SIZE);
+                res = sd_write_blocks_dma(false, scratch_buffer, (uint32_t)sector + i, 1);
+                if (res != RES_OK) {
+                    return res;
                 }
             }
         }

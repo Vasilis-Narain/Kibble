@@ -12,6 +12,8 @@
 
 extern uint8_t _snocache[];
 extern uint8_t _enocache[];
+extern uint8_t _saxi_cached[];
+extern uint8_t _eaxi_cached[];
 
 #ifdef __arm__
 #define AXI_BSS __attribute__((section(".AXI_BSS")))
@@ -27,11 +29,29 @@ static inline bool mem_buff_is_nocache(const void *ptr, uint32_t len) {
     }
     return true;
 }
+
+static inline bool mem_buff_is_axi_cached(const void *ptr, uint32_t len) {
+    uint32_t ptr_n = (uint32_t)ptr;
+    if (ptr_n < (uint32_t)_saxi_cached || ptr_n >= (uint32_t)_eaxi_cached) {
+        return false;
+    }
+    if (len > (uint32_t)_eaxi_cached - ptr_n) {
+        return false;
+    }
+    return true;
+}
+
 #else // __arm__
 #define AXI_BSS
 #define DMA_NOCACHE
 
 static inline bool mem_buff_is_nocache(const void *ptr, uint32_t len) {
+    (void)ptr;
+    (void)len;
+    return true;
+}
+
+static inline bool mem_buff_is_axi_cached(const void *ptr, uint32_t len) {
     (void)ptr;
     (void)len;
     return true;
