@@ -4,11 +4,12 @@
  * SPDX-License-Identifier: MIT
  */
 
-/* This file contains glue function implementations used by FatFS */
+/* This file contains glue functions used by FatFS */
 #include "sd.h"
 
 #include <stdint.h>
 #include <string.h>
+#include <stdbool.h>
 
 #include "ff.h"     /* Basic definitions of FatFs */
 #include "diskio.h" /* Declarations FatFs MAI */
@@ -134,6 +135,7 @@ static inline uint32_t sd_transfer_cplt_status_poll(volatile UINT *status_ptr, u
 
 static DRESULT sd_read_blocks_dma(bool needs_invalidate, uint8_t *buff, uint32_t sector, uint32_t count) {
     DRESULT res = RES_ERROR;
+    read_status = 0;
     if (HAL_SD_ReadBlocks_DMA(sd_handle, (uint8_t *)buff, (uint32_t)sector, count) == HAL_OK) {
         // Wait for reading process to complete (or timeout)
         uint32_t timeout = HAL_GetTick();
@@ -170,7 +172,6 @@ DRESULT disk_read(
 ) {
     (void)pdrv;
     DRESULT res = RES_ERROR;
-    read_status = 0;
     uint32_t byte_count = count * SD_DEFAULT_BLOCK_SIZE;
 
     if (mem_buff_is_nocache(buff, byte_count)) {
@@ -206,6 +207,8 @@ DRESULT disk_read(
 
 static DRESULT sd_write_blocks_dma(bool needs_cache_clean, uint8_t *buff, uint32_t sector, uint32_t count) {
     DRESULT res = RES_ERROR;
+    write_status = 0;
+
     if (needs_cache_clean) {
         // NOTE(vasilis): here we clean (aka flush) the cache making sure whatever is in buff is actually in RAM and not in the cache lines
         SCB_CleanDCache_by_Addr((uint32_t *)buff, count * SD_DEFAULT_BLOCK_SIZE);
@@ -242,7 +245,6 @@ DRESULT disk_write(
 ) {
     (void)pdrv;
     DRESULT res = RES_ERROR;
-    write_status = 0;
     uint32_t byte_count = count * SD_DEFAULT_BLOCK_SIZE;
 
     if (mem_buff_is_nocache(buff, byte_count)) { // in dma nocache
