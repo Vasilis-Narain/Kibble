@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: MIT
  */
 
-#ifndef __LOG_H
-#define __LOG_H
+#ifndef KIBBLE_LOG_H
+#define KIBBLE_LOG_H
 
 #include <stdbool.h>
 
@@ -19,4 +19,4 @@ void log_printf_FromISR(const char *fmt, ...);
 #define LOG(...) ((void)0)
 #endif // DEBUG
 
-#endif /* __LOG_H */
+#endif /* KIBBLE_LOG_H */

@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: MIT
  */
 
-#ifndef __AUDIO_INTERNAL_H
-#define __AUDIO_INTERNAL_H
+#ifndef KIBBLE_AUDIO_INTERNAL_H
+#define KIBBLE_AUDIO_INTERNAL_H
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -58,4 +58,4 @@ void audio_voice_stop_many(uint32_t start, uint32_t end);
 const SfxDesc *audio_sfx_get_desc(Sfx sfx);
 void audio_sfx_set_volume(Sfx sfx, float volume);
 
-#endif /* __AUDIO_INTERNAL_H */
+#endif /* KIBBLE_AUDIO_INTERNAL_H */

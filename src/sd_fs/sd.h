@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: MIT
  */
 
-#ifndef __SD_H
-#define __SD_H
+#ifndef KIBBLE_SD_H
+#define KIBBLE_SD_H
 
 // sd det irq callback
 void sd_det_irq_callback(void);
 
-#endif /* __SD_H */
+#endif /* KIBBLE_SD_H */

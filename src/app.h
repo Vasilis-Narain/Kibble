@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: MIT
  */
 
-#ifndef __APP_H
-#define __APP_H
+#ifndef KIBBLE_APP_H
+#define KIBBLE_APP_H
 
 void app_main(void);
 
-#endif /* __APP_H */
+#endif /* KIBBLE_APP_H */

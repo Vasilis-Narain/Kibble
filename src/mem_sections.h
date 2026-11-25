@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: MIT
  */
 
-#ifndef __MEM_SECTIONS_H
-#define __MEM_SECTIONS_H
+#ifndef KIBBLE_MEM_SECTIONS_H
+#define KIBBLE_MEM_SECTIONS_H
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -41,4 +41,4 @@ static inline bool mem_buff_is_nocache(const void *ptr, uint32_t len) {
 // Stops compiler from reordering loads
 #define COMPILER_FENCE __atomic_signal_fence(__ATOMIC_SEQ_CST)
 
-#endif // __MEM_SECTIONS_H
+#endif // KIBBLE_MEM_SECTIONS_H
