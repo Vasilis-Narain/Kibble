@@ -7,15 +7,38 @@
 #ifndef __MEM_SECTIONS_H
 #define __MEM_SECTIONS_H
 
+#include <stdint.h>
+#include <stdbool.h>
+
+extern uint8_t _snocache[];
+extern uint8_t _enocache[];
+
 #ifdef __arm__
 #define AXI_BSS __attribute__((section(".AXI_BSS")))
 #define DMA_NOCACHE __attribute__((section(".RAM_NOCACHE"), aligned(32)))
+
+static inline bool mem_buff_is_nocache(const void *ptr, uint32_t len) {
+    uint32_t ptr_n = (uint32_t)ptr;
+    if (ptr_n < (uint32_t)_snocache || ptr_n >= (uint32_t)_enocache) {
+        return false;
+    }
+    if (len > (uint32_t)_enocache - ptr_n) {
+        return false;
+    }
+    return true;
+}
 #else // __arm__
 #define AXI_BSS
 #define DMA_NOCACHE
+
+static inline bool mem_buff_is_nocache(const void *ptr, uint32_t len) {
+    (void)ptr;
+    (void)len;
+    return true;
+}
 #endif // __arm__
 
 // Stops compiler from reordering loads
 #define COMPILER_FENCE __atomic_signal_fence(__ATOMIC_SEQ_CST)
 
-#endif // __MEM_SECIONS_H
+#endif // __MEM_SECTIONS_H

@@ -15,6 +15,7 @@
 #include "stm32h7xx_hal.h"
 
 #include "log.h"
+#include "mem_sections.h"
 
 #define SD_TIMEOUT 1000 // 1 second timeout
 #define SD_DEFAULT_BLOCK_SIZE 512
