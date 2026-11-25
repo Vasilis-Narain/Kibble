@@ -25,6 +25,7 @@
 #define SD_DEFAULT_BLOCK_SIZE FF_MAX_SS
 #define SD_DEBOUNCE_MS 10
 #define SD_TRANSFER_BUS_WIDTH 1
+#define SD_INIT_DIVISOR 14 //NOTE(vasilis): Clock input (pre div) is 140 MHZ
 
 #if defined(SD_TRANSFER_BUS_WIDTH) && (SD_TRANSFER_BUS_WIDTH == 1)
 #define SD_TRANSFER_MODE_INTERNAL SDMMC_BUS_WIDE_1B
@@ -105,9 +106,8 @@ DSTATUS disk_initialize(
     sd_handle->Init.ClockPowerSave = SDMMC_CLOCK_POWER_SAVE_DISABLE;
     sd_handle->Init.BusWide = SD_TRANSFER_MODE_INTERNAL;
     sd_handle->Init.HardwareFlowControl = SDMMC_HARDWARE_FLOW_CONTROL_ENABLE;
+    sd_handle->Init.ClockDiv = SD_INIT_DIVISOR;
 
-    //NOTE(vasilis): Clock input (pre div) is 140 MHZ
-    sd_handle->Init.ClockDiv = 14;
     if (HAL_SD_Init(sd_handle) != HAL_OK) {
         stat = STA_NOINIT;
     } else {

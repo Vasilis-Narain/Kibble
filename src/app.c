@@ -8,74 +8,24 @@
 
 // freertos
 #include "FreeRTOS.h" // IWYU pragma: keep
-#include "sdmmc.h"
-#include "stm32h7xx_hal_gpio.h"
 #include "task.h"
 
 // Fat fs
-#include <ff.h>
-
-#include "mem_sections.h"
 #include "main.h"
 #include "input.h"
 #include "audio.h"
 #include "log.h"
 #include "sd.h"
 
+#define FS_TEST 1
+
+#if (FS_TEST == 1)
+#include "sd_fs/sd_diskio_test_hw.c"
+#endif // FS_TEST
+
 //NOTE(vasilis): tmp for on-device testing of Sfx system
 #include "laser_shoot.h"
 static Sfx laser;
-
-//NOTE(vasilis): testing sd bring up
-//////////////////////////////////////
-DMA_NOCACHE FATFS SDFatFs; // filesystem object
-DMA_NOCACHE FIL test_file; // file object
-DMA_NOCACHE uint8_t read_buffer[64];
-
-void test_sd_card(void) {
-    FRESULT res;
-    uint32_t bytes_read;
-    uint32_t bytes_written;
-    uint8_t write_text[] = "[STM32H743_Eval]: SD Init OK";
-
-    // initial mount
-    res = f_mount(&SDFatFs, "", 1);
-    if (res != FR_OK) {
-        log_printf("failed initial mount: res = %d, hsd1.e = %d\r\n", res, hsd1.ErrorCode);
-    }
-    // open + write
-    res = f_open(&test_file, "test.txt", FA_CREATE_ALWAYS | FA_WRITE);
-    if (res != FR_OK) {
-        log_printf("failed initial open: res = %d, hsd1.e = %d\r\n", res, hsd1.ErrorCode);
-    }
-    res = f_write(&test_file, write_text, sizeof(write_text), (void *)&bytes_written);
-    if ((bytes_written > 0) && (res == FR_OK)) {
-        f_close(&test_file);
-    }
-
-    // unmount then mount to ensure we read from sd
-    f_unmount("");
-    res = f_mount(&SDFatFs, "", 1);
-    if (res != FR_OK) {
-        log_printf("failed second mount: res = %d, hsd1.e = %d\r\n", res, hsd1.ErrorCode);
-    }
-
-    // then open + read
-    res = f_open(&test_file, "test.txt", FA_READ);
-    if (res != FR_OK) {
-        log_printf("failed second open: res = %d, hsd1.e = %d\r\n", res, hsd1.ErrorCode);
-    }
-    res = f_read(&test_file, read_buffer, sizeof(read_buffer), (void *)&bytes_read);
-    if ((bytes_read > 0) && (res == FR_OK)) {
-        f_close(&test_file);
-        if (bytes_read == bytes_written) {
-            return;
-        }
-    }
-    return;
-}
-
-//////////////////////////////////////
 
 // freeRTOS hooks
 void vApplicationMallocFailedHook(void) {
@@ -103,8 +53,9 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 static void frame_loop(void *pvParameters) {
     (void)pvParameters;
 
-    test_sd_card();
-    log_printf("SD Readback: %s\r\n", (char *)read_buffer);
+#if (FS_TEST == 1)
+    sd_diskio_hw_test();
+#endif // FS_TEST
 
     TickType_t last_wake_time = xTaskGetTickCount();
     static uint32_t frame = 0;
