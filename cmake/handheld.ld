@@ -74,6 +74,12 @@ _sstack = _estack - _Min_Stack_Size;
 _Min_Heap_Size = 0x200;      /* required amount of heap  */
 _Min_Stack_Size = 0x1000; /* required amount of stack */
 
+_snocache = ORIGIN(RAM_NOCACHE);
+_enocache = ORIGIN(RAM_NOCACHE) + LENGTH(RAM_NOCACHE);
+
+_saxi_cached = ORIGIN(RAM);
+_eaxi_cached = ORIGIN(RAM) + LENGTH(RAM);
+
 /* Define output sections */
 SECTIONS
 {

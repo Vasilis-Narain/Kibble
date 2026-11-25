@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: MIT
  */
 
-#ifndef __INPUT_H
-#define __INPUT_H
+#ifndef KIBBLE_INPUT_H
+#define KIBBLE_INPUT_H
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -77,4 +77,4 @@ float input_get_joy_axis_movement(JoyAxis axis);
 // Internal use
 void input_update(uint32_t raw_btns, uint16_t raw_adc_x, uint16_t raw_adc_y);
 
-#endif /* __INPUT_H */
+#endif /* KIBBLE_INPUT_H */

@@ -16,7 +16,7 @@
 #include "task.h"
 
 #ifndef LOG_MAX_MSG_LEN
-#define LOG_MAX_MSG_LEN 64
+#define LOG_MAX_MSG_LEN 128
 #endif /* LOG_MAX_MSG_LEN */
 
 typedef struct {

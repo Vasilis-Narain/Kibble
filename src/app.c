@@ -6,25 +6,46 @@
 
 #include "app.h"
 
+// freertos
 #include "FreeRTOS.h" // IWYU pragma: keep
 #include "task.h"
+
+// Fat fs
 #include "main.h"
 #include "input.h"
 #include "audio.h"
 #include "log.h"
+#include "sd.h"
+
+#define FS_TEST 1
+
+#if (FS_TEST == 1)
+#include "sd_fs/sd_diskio_test_hw.c"
+#endif // FS_TEST
 
 //NOTE(vasilis): tmp for on-device testing of Sfx system
 #include "laser_shoot.h"
 static Sfx laser;
 
+// freeRTOS hooks
 void vApplicationMallocFailedHook(void) {
     configASSERT(0);
 }
-
 void vApplicationStackOverflowHook(TaskHandle_t t, char *n) {
     (void)t;
     (void)n;
     configASSERT(0);
+}
+
+// GPIO IRQ dispatcher
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
+    switch (GPIO_Pin) {
+    case SD_DET_Pin:
+        sd_det_irq_callback();
+        break;
+    default: // not implemented pins
+        break;
+    }
 }
 
 //NOTE(vasilis): eventually the TE pin from the display will drive frame update
@@ -32,13 +53,15 @@ void vApplicationStackOverflowHook(TaskHandle_t t, char *n) {
 static void frame_loop(void *pvParameters) {
     (void)pvParameters;
 
+#if (FS_TEST == 1)
+    sd_diskio_hw_test();
+#endif // FS_TEST
+
     TickType_t last_wake_time = xTaskGetTickCount();
     static uint32_t frame = 0;
     for (;;) {
         input_poll();
 
-        // we don't want printf in actual tasks.
-        // create gatekeeper with a q
         if (input_is_key_pressed(INPUT_A)) {
             log_printf("Input A is pressed\r\n");
 
@@ -47,7 +70,7 @@ static void frame_loop(void *pvParameters) {
         }
         if (input_is_key_pressed(INPUT_JOY_SEL)) {
             log_printf("Input JOY_SEL is pressed\r\n");
-            //
+
             //NOTE(vasilis): tmp for on-device testing of Sfx system
             audio_play_sfx(laser);
         }

@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: MIT
  */
 
-#ifndef __AUDIO_H
-#define __AUDIO_H
+#ifndef KIBBLE_AUDIO_H
+#define KIBBLE_AUDIO_H
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -35,4 +35,4 @@ enum {
     SFX_ADPCM,
 };
 
-#endif // __AUDIO_H
+#endif // KIBBLE_AUDIO_H
