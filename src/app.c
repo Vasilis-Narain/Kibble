@@ -8,7 +8,6 @@
 
 // freertos
 #include "FreeRTOS.h" // IWYU pragma: keep
-#include "mem_sections.h"
 #include "sdmmc.h"
 #include "stm32h7xx_hal_gpio.h"
 #include "task.h"
@@ -16,6 +15,7 @@
 // Fat fs
 #include <ff.h>
 
+#include "mem_sections.h"
 #include "main.h"
 #include "input.h"
 #include "audio.h"
@@ -111,8 +111,6 @@ static void frame_loop(void *pvParameters) {
     for (;;) {
         input_poll();
 
-        // we don't want printf in actual tasks.
-        // create gatekeeper with a q
         if (input_is_key_pressed(INPUT_A)) {
             log_printf("Input A is pressed\r\n");
 
@@ -121,7 +119,7 @@ static void frame_loop(void *pvParameters) {
         }
         if (input_is_key_pressed(INPUT_JOY_SEL)) {
             log_printf("Input JOY_SEL is pressed\r\n");
-            //
+
             //NOTE(vasilis): tmp for on-device testing of Sfx system
             audio_play_sfx(laser);
         }
