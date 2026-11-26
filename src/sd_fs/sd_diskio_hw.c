@@ -175,11 +175,11 @@ DRESULT disk_read(
     DRESULT res = RES_ERROR;
     uint32_t byte_count = count * SD_DEFAULT_BLOCK_SIZE;
 
-    if (mem_buff_is_nocache(buff, byte_count)) {
-        //NOTE(vasilis): buff is not cacheable
+    if (mem_buff_is_nocache(buff, byte_count) && (((uint32_t)buff & 0x3u) == 0)) {
+        //NOTE(vasilis): buff is not cacheable + 4-byte aligned
         res = sd_read_blocks_dma(false, (uint8_t *)buff, (uint32_t)sector, count);
     } else {
-        if (mem_buff_is_axi_cached(buff, byte_count) && (((uint32_t)buff & 0x1F) == 0)) {
+        if (mem_buff_is_axi_cached(buff, byte_count) && (((uint32_t)buff & 0x1Fu) == 0)) {
             //NOTE(vasilis): buff is cacheable and 32-byte aligned
             //This means DMA can write direct to buffer but we need to manage cache
             //clean -> dma -> invalidate (this step happens in the function)
@@ -248,10 +248,10 @@ DRESULT disk_write(
     DRESULT res = RES_ERROR;
     uint32_t byte_count = count * SD_DEFAULT_BLOCK_SIZE;
 
-    if (mem_buff_is_nocache(buff, byte_count)) { // in dma nocache
+    if (mem_buff_is_nocache(buff, byte_count) && (((uint32_t)buff & 0x3u) == 0)) { // nocache + 4-byte aligned
         res = sd_write_blocks_dma(false, (uint8_t *)buff, (uint32_t)sector, count);
     } else {
-        if (mem_buff_is_axi_cached(buff, byte_count) && (((uint32_t)buff & 0x3) == 0)) { // cacheable + aligned (here 4-byte aligned is fine)
+        if (mem_buff_is_axi_cached(buff, byte_count) && (((uint32_t)buff & 0x3u) == 0)) { // cacheable + aligned (here 4-byte aligned is fine)
             res = sd_write_blocks_dma(true, (uint8_t *)buff, (uint32_t)sector, count);
         } else { // cacheable + unaligned || DTCM (non idma reachable)
             // memcpy into scratch -> dma
