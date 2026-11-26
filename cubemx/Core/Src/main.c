@@ -20,7 +20,9 @@
 #include "main.h"
 #include "adc.h"
 #include "dma.h"
+#include "mdma.h"
 #include "sai.h"
+#include "sdmmc.h"
 #include "tim.h"
 #include "gpio.h"
 #include "fmc.h"
@@ -107,10 +109,12 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_DMA_Init();
+  MX_MDMA_Init();
   MX_FMC_Init();
   MX_TIM14_Init();
   MX_SAI1_Init();
   MX_ADC1_Init();
+  MX_SDMMC1_SD_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
