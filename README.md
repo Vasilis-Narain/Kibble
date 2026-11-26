@@ -23,12 +23,12 @@ API's should strive for similar usage and simplicity.
 - [ ] prototype schematic
 - [x] local build setup (makefile, vendor tools, etc)
 - [x] initial bring up (blinky)
-- [ ] automatic testing 
+- [x] ci unit testing
 - [ ] HIL automatic testing (learn how it works and decide if necessary)
 - [x] button input driver (GPIO)
 - [ ] display driver
-- [ ] audio driver
-- [ ] sd card integration
+- [x] audio driver
+- [x] sd card integration (4-byte mode not working yet: throwing CRC errors)
 - [ ] user facing input API
 - [ ] user facing render API
 - [ ] user facing audio API
