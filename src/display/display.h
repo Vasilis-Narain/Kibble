@@ -9,6 +9,8 @@
 #define SCREEN_WIDTH 320u
 #define SCREEN_HEIGHT 240u
 
+// display_hw.c
 void display_init(void);
+void display_set_brightness(float brightness);
 
 #endif // KIBBLE_DISPLAY_H

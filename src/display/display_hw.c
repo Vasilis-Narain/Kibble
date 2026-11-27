@@ -11,7 +11,6 @@
 #include "main.h"
 #include "stm32h7xx_hal.h"
 
-//#include "fmc.h"
 //#include "mdma.h"
 
 //#include "mem_sections.h"
@@ -25,6 +24,7 @@
 #define FB_SIZE_16BYTE (SCREEN_WIDTH * SCREEN_HEIGHT)
 
 #if (DISPLAY_BUS_WIDTH == FMC_NORSRAM_MEM_BUS_WIDTH_8)
+//NOTE(vasilis): MMIO's for FMC peripheral: writing to them initiates tx
 #define CMD_ADDR ((volatile uint8_t *)DISPLAY_FMC_BASE)
 #define DATA_ADDR ((volatile uint8_t *)(DISPLAY_FMC_BASE + (1u << DC_ADDR_LINE)))
 #elif (DISPLAY_BUS_WIDTH == FMC_NORSRAM_MEM_BUS_WIDTH_16)
@@ -39,9 +39,10 @@ static inline void display_write_cmd(ST7789VI_Cmd cmd);
 static inline void display_write_data(uint16_t data);
 static inline void display_hw_reset(void);
 
-//NOTE(vasilis): suppress unused warnings
-#if 0
 // private variables
+static TIM_HandleTypeDef *pwm_handle = &htim14;
+static uint32_t ccr_max;
+#if 0
 static MDMA_HandleTypeDef *mdma_handle = &hmdma_mdma_channel0_sw_0; // mdma handle alias
 static volatile uint32_t transfer_error_detected = 0;               // Tx Error detected flag (isr sets)
 static volatile uint32_t transfer_complete_detected = 0;            // Tx Cplt detected flag (isr sets)
@@ -56,7 +57,26 @@ static void fill_buffer(uint16_t *ptr, uint32_t len, uint16_t data) {
         ptr[i] = i + data;
     }
 }
-#endif
+#endif // 0
+
+// Sets pwm duty cycle
+static inline void display_set_pwm_duty_cycle(uint32_t value) {
+    HAL_TIM_PWM_Start(pwm_handle, TIM_CHANNEL_1);
+    __HAL_TIM_SET_COMPARE(pwm_handle, TIM_CHANNEL_1, value);
+}
+
+// Sets brightness. Clamps `brightness` to [0,1]
+void display_set_brightness(float brightness) {
+    uint32_t val;
+    if (brightness > 1.0f) {
+        brightness = 1.0f;
+    }
+    if (brightness < 0.0f) {
+        brightness = 0.0f;
+    }
+    val = (uint32_t)(ccr_max * brightness * brightness + 0.5f);
+    display_set_pwm_duty_cycle(val);
+}
 
 #define DISPLAY_MIN_RESET_DELAY_MS 120u
 #define DCMD_COLMOD_RGB_LSB 4
@@ -196,10 +216,11 @@ void display_init(void) {
     //display_write_cmd(DCMD_TEON);
     //display_write_data(0x00); // V-Blanking only (one pulse per frame on end)
 
+    // store ccr_max
+    ccr_max = __HAL_TIM_GET_AUTORELOAD(pwm_handle) + 1u;
     HAL_Delay(10);
 
-    HAL_TIM_PWM_Start(&htim14, TIM_CHANNEL_1);
-    __HAL_TIM_SET_COMPARE(&htim14, TIM_CHANNEL_1, 30); // value from 0 to 60
+    display_set_brightness(0.8f);
 }
 
 static inline void display_hw_reset(void) {
