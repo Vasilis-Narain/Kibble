@@ -16,6 +16,7 @@
 #include "audio.h"
 #include "log.h"
 #include "sd.h"
+#include "display.h"
 
 #define FS_TEST 1
 
@@ -89,6 +90,7 @@ static void frame_loop(void *pvParameters) {
 }
 
 void app_main(void) {
+    display_init();
     input_joystick_init();
     audio_init();
 

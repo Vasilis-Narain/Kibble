@@ -66,6 +66,10 @@ if(CMAKE_CROSSCOMPILING)
 
         # SD File System
         src/sd_fs/sd_diskio_hw.c
+
+        # Display system
+        src/display/display.c
+        src/display/display_hw.c
     )
     target_sources(handheld PRIVATE ${APP_SRC})
     set_source_files_properties(${APP_SRC} PROPERTIES COMPILE_OPTIONS "-Wextra")
@@ -76,6 +80,7 @@ if(CMAKE_CROSSCOMPILING)
         src/audio
         src/log
         src/sd_fs
+        src/display
     )
 
     target_link_libraries(handheld
