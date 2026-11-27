@@ -16,6 +16,8 @@
 
 //#include "mem_sections.h"
 #include "stm32h7xx_hal_gpio.h"
+#include "stm32h7xx_hal_tim.h"
+#include "tim.h"
 
 #define DISPLAY_BUS_WIDTH FMC_NORSRAM_MEM_BUS_WIDTH_8
 #define DISPLAY_FMC_BASE 0x60000000u // NE1 bank base
@@ -191,10 +193,13 @@ void display_init(void) {
     display_write_cmd(DCMD_DISPON);
 
     // TE pin on
-    display_write_cmd(DCMD_TEON);
-    display_write_data(0x00); // V-Blanking only (one pulse per frame on end)
+    //display_write_cmd(DCMD_TEON);
+    //display_write_data(0x00); // V-Blanking only (one pulse per frame on end)
 
     HAL_Delay(10);
+
+    HAL_TIM_PWM_Start(&htim14, TIM_CHANNEL_1);
+    __HAL_TIM_SET_COMPARE(&htim14, TIM_CHANNEL_1, 30); // value from 0 to 60
 }
 
 static inline void display_hw_reset(void) {
